@@ -6,6 +6,7 @@
     <title>TestHub</title>
     <link href="{{ mix('/css/app.css') }}" rel="stylesheet" />
     <script src="{{ mix('/js/app.js') }}" defer></script>
+    <link rel="shortcut icon" type="image/png" href="/favicon.png"/>
 </head>
 <body>
 @inertia
