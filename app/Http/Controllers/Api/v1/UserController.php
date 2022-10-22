@@ -49,12 +49,12 @@ class UserController extends Controller
      * Редактировование пользователя (рендер страницы редактирования пользователя)
      */
     public function edit(Request $request) {
-        $UserId = $request->input("User_id");
-        $user = User::where('User_id', $UserId)->first();
+        $UserId = $request->input("id");
+        $user = User::where('id', $UserId)->first();
 
         return Inertia::render('Users/Edit', [
             'title' => 'Редактирование пользователя',
-            'user' => $user
+            'editUser' => $user
         ]);
     }
 
@@ -63,8 +63,8 @@ class UserController extends Controller
      * @return JSON
      */
     public function deleteUser(Request $request) {
-        $id = $request->input("User_id");
-        $result = User::where("User_id", $id)->delete();
+        $id = $request->input("id");
+        $result = User::where("id", $id)->delete();
         if ($result === 1) {
             return [
                 "status" => "true",
@@ -84,13 +84,13 @@ class UserController extends Controller
      */
     public function addUser(Request $request) {
         $request->validate([
-            'User_Name' => 'required|max:255',
-            'User_Password' => 'required|max:255',
+            'email' => 'required|max:255',
+            'password' => 'required|max:255',
         ]);
-        $userName = $request->input("User_Name");
-        $userPassword = $request->input("User_Password");
+        $userName = $request->input("email");
+        $userPassword = $request->input("password");
         
-        $isExist = User::where('User_Name', 'like', $userName)->get()->count();
+        $isExist = User::where('email', 'like', $userName)->get()->count();
 
         if ($isExist > 0) {
             return [
@@ -99,8 +99,8 @@ class UserController extends Controller
             ];
         } else {
             $result = User::insert([
-                'User_Name' => $userName,
-                'User_Password' => $userPassword,
+                'email' => $userName,
+                'password' => $userPassword,
                 'User_Role' => 1
             ]);
     
@@ -135,11 +135,10 @@ class UserController extends Controller
      *  @return JSON результата запроса
      */
     public function updateUser(Request $request) {
-        $UserName = $request->input("User_Name");
-        $UserPassword = $request->input("User_Password");
+        $UserName = $request->input("email");
         $UserRole = $request->input("User_Role");
-        $UserId = $request->input("User_id");
-        $isExist = User::where('User_Name', 'like', $UserName)->where('User_id', 'not', $UserId)->get()->count();
+        $UserId = $request->input("id");
+        $isExist = User::where('email', 'like', $UserName)->where('id', 'not', $UserId)->get()->count();
         if ($isExist > 0) {
             return [
                 "status" => "false",
@@ -147,12 +146,10 @@ class UserController extends Controller
             ];
         } else {
             $request->validate([
-                'User_Name' => 'required|max:255',
-                'User_Password' => 'required|max:255',
+                'email' => 'required|max:255'
             ]);
-            $result = User::where('User_id', $UserId)->update([
-                'User_Name' => $UserName,
-                'User_Password' => $UserPassword,
+            $result = User::where('id', $UserId)->update([
+                'email' => $UserName,
                 'User_Role' => $UserRole,
             ]);
             if ($result === 1 || $result === true) {

@@ -7,16 +7,16 @@
         </Link>
         <div class="uk-navbar-right">
           <ul class="uk-navbar-nav">
-            <li><Link href="/tasks" style="min-height:55px; max-height:55px" v-if="isLoggedIn" id="HeaderTasksBtn">Проект</Link></li>
-            <li><Link href="/persons" v-if="isLoggedIn" style="min-height:55px; max-height:55px">Задачи</Link></li>
-            <li><Link href="/users" v-if="isLoggedIn" style="min-height:55px; max-height:55px">Пользователи</Link></li>
-            <li><Link href="/sprints" v-if="isLoggedIn" style="min-height:55px; max-height:55px">Тестраны</Link></li>
-            <li class="uk-active" v-if="!isLoggedIn"><Link href="/login" style="min-height:55px; max-height:55px">Войти</Link></li>
+            <li v-if="$page.props.user"><Link href="/tasks" style="min-height:55px; max-height:55px" id="HeaderTasksBtn">Проект</Link></li>
+            <li v-if="$page.props.user"><Link href="/persons" style="min-height:55px; max-height:55px">Задачи</Link></li>
+            <li v-if="$page.props.user && $page.props.user.User_Role > 9" ><Link href="/users" style="min-height:55px; max-height:55px">Пользователи</Link></li>
+            <li v-if="$page.props.user"><Link href="/sprints" style="min-height:55px; max-height:55px">Тестраны</Link></li>
+            <li class="uk-active" v-if="!$page.props.user"><Link href="/login" style="min-height:55px; max-height:55px">Войти</Link></li>
             <li>
-              <div class="uk-navbar-right" v-if="isLoggedIn">
+              <div class="uk-navbar-right" v-if="$page.props.user">
                 <ul class="uk-navbar-nav">
-                  <li class="uk-active" v-if="isLoggedIn" ><a href="#" id="HeaderUserName" style="min-height:55px; max-height:55px">{{GetName}}</a></li>
-                  <li><Link href="#" id="HeaderLogoutBtn" style="color:red; min-height:55px; max-height:55px">Выход</Link></li>
+                  <li class="uk-active" v-if="$page.props.user" ><a href="#" id="HeaderUserName" style="min-height:55px; max-height:55px">{{$page.props.user.email}}</a></li>
+                  <li><Link @click="logout" id="HeaderLogoutBtn" v-if="$page.props.user" style="color:red; min-height:55px; max-height:55px">Выход</Link></li>
                 </ul>
               </div>
             </li>
@@ -44,8 +44,11 @@ export default {
         Link
     },
     computed : {
-      isLoggedIn(){ return false },
-      GetName(){ return "teamСтационар - Величко" },
+    },
+    methods: {
+      logout() {
+        this.$inertia.delete(route('logout'))
+      }
     }
 }
 </script>

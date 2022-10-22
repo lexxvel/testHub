@@ -15,8 +15,8 @@
             <div class="form-group mb-6">
             <label for="exampleInputEmail2" class="form-label inline-block mb-2 text-gray-700">Логин</label>
             <input 
-                v-model="form.User_Name"
-                :class="{'border-red-500': form.errors.User_Name}"
+                v-model="form.email"
+                :class="{'border-red-500': form.errors.email}"
                 type="text" 
                 class="form-control block
                 w-full
@@ -34,33 +34,9 @@
                 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none" id="exampleInput125"
                 placeholder="Имя пользователя">
             
-            <div v-if="form.errors.User_Name" class="text-red-500 mt-2"> {{form.errors.User_Name}}</div>
+            <div v-if="form.errors.email" class="text-red-500 mt-2"> {{form.errors.email}}</div>
             </div>
             
-            <div class="form-group mb-6">
-            <label for="exampleInputEmail2" class="form-label inline-block mb-2 text-gray-700">Пароль</label>
-            <input 
-                v-model="form.User_Password"
-                :class="{'border-red-500': form.errors.User_Password}"
-                type="text" class="form-control block
-                w-full
-                px-3
-                py-1.5
-                text-base
-                font-normal
-                text-gray-700
-                bg-white bg-clip-padding
-                border border-solid border-gray-300
-                rounded
-                transition
-                ease-in-out
-                m-0
-                focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none" id="exampleInput126"
-                placeholder="Пароль">
-            
-            <div v-if="form.errors.User_Password" class="text-red-500 mt-2"> {{form.errors.User_Password}}</div>
-            </div>
-
             <div class="form-group mb-6">
             <label for="exampleInputEmail2" class="form-label inline-block mb-2 text-gray-700">Роль</label>
             <input 
@@ -116,37 +92,34 @@
 <script>
 import {Head, Link, useForm} from '@inertiajs/inertia-vue3'
 import {Inertia} from '@inertiajs/inertia'
+import { onUnmounted } from 'vue'
 export default {
     components: {
         Link, Head, 
     },
     props: {
         title: String,
-        user: Object
+        editUser: Object
     },
     created() {
-        Inertia.on('start', (event) => {  //Слушатель не выключа
-            if (this.form.isDirty) {
-                if (!confirm('Изменения не сохранены. Выйти?')) {
-                    event.preventDefault()
-                    document.removeEventListener('inertia:start', this)
-                } else (
-                    event.
-                    document.removeEventListener('inertia:start', this)
-                )
-            }
-        })
     },
     setup(props) {
+
+        let removeBeforeEventListener = Inertia.on('before', (event) => {
+           if (!confirm('Изменения не сохранены. Выйти?')) {
+                    event.preventDefault()
+                }
+        });
+
         const form = useForm({
-            User_Name: props.user.User_Name,
-            User_Password: props.user.User_Password,
-            User_Role: props.user.User_Role,
-            User_id: props.user.User_id
+            email: props.editUser.email,
+            User_Role: props.editUser.User_Role,
+            id: props.editUser.id
         });
 
         function update() {
-            form.post(route('users.update', props.user.User_id))
+            removeBeforeEventListener();
+            form.post(route('users.update', props.editUser.id))
         }
 
         return {form, update};

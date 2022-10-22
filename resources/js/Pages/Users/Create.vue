@@ -14,8 +14,8 @@
         <form @submit.prevent="store">
             <div class="form-group mb-6">
             <input 
-                v-model="form.User_Name"
-                :class="{'border-red-500': form.errors.User_Name}"
+                v-model="form.email"
+                :class="{'border-red-500': form.errors.email}"
                 type="text" 
                 class="form-control block
                 w-full
@@ -33,13 +33,13 @@
                 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none" id="exampleInput125"
                 placeholder="Имя пользователя">
             
-            <div v-if="form.errors.User_Name" class="text-red-500 mt-2"> {{form.errors.User_Name}}</div>
+            <div v-if="form.errors.email" class="text-red-500 mt-2"> {{form.errors.email}}</div>
             </div>
             
             <div class="form-group mb-6">
             <input 
-                v-model="form.User_Password"
-                :class="{'border-red-500': form.errors.User_Password}"
+                v-model="form.password"
+                :class="{'border-red-500': form.errors.password}"
                 type="password" class="form-control block
                 w-full
                 px-3
@@ -56,7 +56,7 @@
                 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none" id="exampleInput126"
                 placeholder="Пароль">
             
-            <div v-if="form.errors.User_Password" class="text-red-500 mt-2"> {{form.errors.User_Password}}</div>
+            <div v-if="form.errors.password" class="text-red-500 mt-2"> {{form.errors.password}}</div>
             </div>
 
             <div class="form-group form-check text-center mb-6">
@@ -118,8 +118,8 @@ export default {
     },
     setup() {
         const form = useForm({
-            User_Name: null,
-            User_Password: null,
+            email: null,
+            password: null,
             User_Role: null
         });
 

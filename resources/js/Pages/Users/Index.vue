@@ -24,9 +24,6 @@
                             Логин
                         </th>
                         <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
-                            Пароль
-                        </th>
-                        <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
                             Роль
                         </th>
                         <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
@@ -35,12 +32,9 @@
                         </tr>
                     </thead>
                     <tbody v-if="users.total > 0">
-                        <tr v-for="user in users.data" class="bg-gray-100 border-b" :key="user.User_id">
+                        <tr v-for="user in users.data" class="bg-gray-100 border-b" :key="user.id">
                         <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                            {{user.User_Name}}
-                        </td>
-                        <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                            {{user.User_Password}}
+                            {{user.email}}
                         </td>
                         <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
                             {{user.User_Role}}
@@ -49,8 +43,8 @@
                             Команда
                         </td>
                         <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap flex justify-end items-center">
-                            <Link :href="route('users.edit', {'User_id': user.User_id})" class="text-indigo-600 hover:text-indigo-900" style="margin-right: 10px">Изменить</Link>
-                            <Link @click="deleteUser(user.User_id)" class="text-red-600 hover:text-red-900 cursor-pointer">Удалить</Link>
+                            <Link :href="route('users.edit', {'id': user.id})" class="text-indigo-600 hover:text-indigo-900" style="margin-right: 10px">Изменить</Link>
+                            <Link @click="deleteUser(user.id)" class="text-red-600 hover:text-red-900 cursor-pointer">Удалить</Link>
                         </td>
                         </tr>
                     </tbody>
@@ -125,7 +119,7 @@ export default {
         async deleteUser(id) {
             this.loading = true;
             if (confirm("Вы уверены?")) {
-                await this.$inertia.post(this.route('users.destroy', {'User_id': id}));
+                await this.$inertia.post(this.route('users.destroy', {'id': id}));
                 this.loading = false;
 
                 setTimeout(() => {  //** TODO: заменить костыль на ожидание ответа */

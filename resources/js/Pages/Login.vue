@@ -6,10 +6,13 @@
   </div>
   <div class="loginFormContain">
     <div class="block p-6 rounded-lg shadow-lg bg-white max-w-sm loginForm">
-      <form>
+      <form @submit.prevent="login">
         <div class="form-group mb-6">
           <label for="exampleInputEmail2" class="form-label inline-block mb-2 text-gray-700">Логин</label>
-          <input type="text" class="form-control
+          <input 
+            v-model="form.email"
+            :class="{'border-red-500': form.errors.email}"
+            type="text" class="form-control
             block
             w-full
             px-3
@@ -24,11 +27,16 @@
             ease-in-out
             m-0
             focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none" id="exampleInputEmail2"
-            aria-describedby="emailHelp" placeholder="Введите логин" required>
+            aria-describedby="emailHelp" placeholder="Введите логин">
+            
+            <div v-if="form.errors.email" class="text-red-500 mt-2"> {{form.errors.email}}</div>
         </div> 
         <div class="form-group mb-6">
           <label for="exampleInputPassword2" class="form-label inline-block mb-2 text-gray-700">Пароль</label>
-          <input type="password" class="form-control block
+          <input 
+            v-model="form.password"
+            :class="{'border-red-500': form.errors.password}"
+            type="password" class="form-control block
             w-full
             px-3
             py-1.5
@@ -42,7 +50,8 @@
             ease-in-out
             m-0
             focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none" id="exampleInputPassword2"
-            placeholder="Введите пароль" required>
+            placeholder="Введите пароль">
+            <div v-if="form.errors.password" class="text-red-500 mt-2"> {{form.errors.password}}</div>
         </div>
         <div class="flex justify-between items-center mb-6">
           <div class="form-group form-check">
@@ -76,7 +85,7 @@
 </template>
 
 <script>
-import {Head} from '@inertiajs/inertia-vue3'
+import {Head, useForm} from '@inertiajs/inertia-vue3'
 
 export default {
     components: {
@@ -86,9 +95,19 @@ export default {
         title: String
     },
     methods: {
-      login() {
-        //Описание логина
-      }
+    },
+    setup() {
+        const form = useForm({
+            email: null,
+            password: null
+        });
+
+        function login() {
+            form.post(route('login'))
+        }
+
+        return {form, login};
+
     }
 }
 </script>
