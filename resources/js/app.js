@@ -7,8 +7,8 @@ import Layout from './Shared/Layout';
 
 const store = createStore({
     state: {
-        preferProject: localStorage.getItem('prefProject') || '',
-        preferProjectId: localStorage.getItem('prefProjectId') || '',
+        preferProject: VueCookieNext.getCookie('prefProject'), // localStorage.getItem('prefProject') || '',
+        preferProjectId: VueCookieNext.getCookie('prefProjectId'), //localStorage.getItem('prefProjectId') || '',
     },
     mutations: {
       increment (state) {
@@ -37,7 +37,8 @@ const store = createStore({
         },
       }
   })
-  
+
+VueCookieNext.config({ expire: '30d', secure: true })
 
 createInertiaApp({
     resolve: name => {
