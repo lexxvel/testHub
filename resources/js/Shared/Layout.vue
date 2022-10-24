@@ -7,10 +7,10 @@
         </Link>
         <div class="uk-navbar-right">
           <ul class="uk-navbar-nav">
-            <li v-if="$page.props.user"><Link href="/tasks" style="min-height:55px; max-height:55px" id="HeaderTasksBtn">Проект</Link></li>
-            <li v-if="$page.props.user"><Link href="/persons" style="min-height:55px; max-height:55px">Задачи</Link></li>
+            <li v-if="$page.props.user"><Link href="/projects" style="min-height:55px; max-height:55px">{{ prefProjectName }}</Link></li>
+            <li v-if="$page.props.user"><Link href="/tasks" style="min-height:55px; max-height:55px">Задачи</Link></li>
             <li v-if="$page.props.user && $page.props.user.User_Role > 9" ><Link href="/users" style="min-height:55px; max-height:55px">Пользователи</Link></li>
-            <li v-if="$page.props.user"><Link href="/sprints" style="min-height:55px; max-height:55px">Тестраны</Link></li>
+            <li v-if="$page.props.user"><Link href="/testruns" style="min-height:55px; max-height:55px">Тестраны</Link></li>
             <li class="uk-active" v-if="!$page.props.user"><Link href="/login" style="min-height:55px; max-height:55px">Войти</Link></li>
             <li>
               <div class="uk-navbar-right" v-if="$page.props.user">
@@ -36,19 +36,28 @@
 </template>
 
 <script>
-
+import { Inertia } from '@inertiajs/inertia'
 import {Link} from '@inertiajs/inertia-vue3'
+import {mapGetters} from 'vuex';
 
 export default {
     components: {
         Link
     },
     computed : {
+        ...mapGetters ([
+          'prefProject',
+          'prefProjectName'
+        ])
     },
+    data:() => ({
+    }),
     methods: {
       logout() {
         this.$inertia.delete(route('logout'))
       }
+    },
+    created() {
     }
 }
 </script>

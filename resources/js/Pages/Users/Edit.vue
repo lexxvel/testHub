@@ -92,7 +92,6 @@
 <script>
 import {Head, Link, useForm} from '@inertiajs/inertia-vue3'
 import {Inertia} from '@inertiajs/inertia'
-import { onUnmounted } from 'vue'
 export default {
     components: {
         Link, Head, 
@@ -106,9 +105,13 @@ export default {
     setup(props) {
 
         let removeBeforeEventListener = Inertia.on('before', (event) => {
-           if (!confirm('Изменения не сохранены. Выйти?')) {
+            if (form.isDirty) {
+                if (!confirm('Изменения не сохранены. Выйти?')) {
                     event.preventDefault()
+                } else {
+                    removeBeforeEventListener();
                 }
+            }
         });
 
         const form = useForm({
@@ -129,13 +132,5 @@ export default {
 </script>
 
 <style>
-.userEditForm {
-    height: 30%;
-    width: 30%;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    margin: -125px 0 0 -125px;
-  }
     
 </style>

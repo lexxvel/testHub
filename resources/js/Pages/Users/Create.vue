@@ -3,7 +3,7 @@
 <Head :title="title" />
 <div class="FormTitle">
     <h2>{{title}}</h2>
-    <Link :href="route('users')" class="text-indigo-600 hover:text-indigo-900 my-5 block">
+    <Link :href="route('users')" class="text-blue-600 hover:text-blue-900 my-5 block">
         Вернуться назад
     </Link>
 </div>

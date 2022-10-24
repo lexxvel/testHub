@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Crypt;
 
 class UserController extends Controller
 {
@@ -88,7 +89,11 @@ class UserController extends Controller
             'password' => 'required|max:255',
         ]);
         $userName = $request->input("email");
+
+        Crypt::encryptString($request->input("password"));
+
         $userPassword = $request->input("password");
+        $cryptedUserPassword = bcrypt($userPassword);
         
         $isExist = User::where('email', 'like', $userName)->get()->count();
 
@@ -98,9 +103,10 @@ class UserController extends Controller
                 "msg" => "Пользователь не создан, имя использовано ранее"
             ];
         } else {
+
             $result = User::insert([
                 'email' => $userName,
-                'password' => $userPassword,
+                'password' => $cryptedUserPassword,
                 'User_Role' => 1
             ]);
     
