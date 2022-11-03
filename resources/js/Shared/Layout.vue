@@ -8,7 +8,7 @@
         <div class="uk-navbar-right">
           <ul class="uk-navbar-nav">
             <li v-if="$page.props.user"><Link href="/projects" style="min-height:55px; max-height:55px">{{ prefProjectName }}</Link></li>
-            <li v-if="$page.props.user"><Link href="/tasks" style="min-height:55px; max-height:55px">Задачи</Link></li>
+            <li v-if="$page.props.user"><Link href="/tasks" :data="{ Project_id: prefProject }" style="min-height:55px; max-height:55px">Задачи</Link></li>
             <li v-if="$page.props.user && $page.props.user.User_Role > 9" ><Link href="/users" style="min-height:55px; max-height:55px">Пользователи</Link></li>
             <li v-if="$page.props.user"><Link href="/testruns" style="min-height:55px; max-height:55px">Тестраны</Link></li>
             <li class="uk-active" v-if="!$page.props.user"><Link href="/login" style="min-height:55px; max-height:55px">Войти</Link></li>

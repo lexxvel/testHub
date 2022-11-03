@@ -8,7 +8,7 @@
 
 <div class="UserForm" v-if="!loading">
     <div class=" items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6">
-        
+
         <Link :href="route('users.create')" class="text-blue-600 hover:text-blue-900 my-5 block">
             Добавить пользователя
         </Link>
@@ -62,7 +62,7 @@
             <a href="#" class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Previous</a>
             <a href="#" class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Next</a>
         </div>
-        
+
     </div>
 </div>
 </template>
@@ -80,7 +80,7 @@ export default {
         Head, Pagination, Link, Spin
     },
     created() {
-    
+
         if (this.$page.props.errors.error_msg !== "" && this.$page.props.errors.error_msg) {
                 let msg = this.$page.props.errors.error_msg;
                 this.$page.props.errors.error_msg = "";
@@ -91,10 +91,10 @@ export default {
                 let msg = this.$page.props.errors.msg;
                 this.$page.props.errors.msg = "";
                 UIkit.notification({message: msg, status: 'success'});
-        }        
-        
+        }
+
         this.$watch('$page.props.errors.msg', (newValue) => {
-            
+
             if (this.$page.props.errors.msg !== "" && this.$page.props.errors.msg) {
                 let msg = this.$page.props.errors.msg;
                 this.$page.props.errors.msg = "";
@@ -126,18 +126,18 @@ export default {
                 if (this.users.data.length === 0 && this.users.total > 0) {
                     this.$inertia.get(this.route('users'))
                 }
-                },  1500)  
-                
+                },  1500)
+
             }
         },
         closeAlert() {
             this.$page.props.errors.msg = "";
             this.$page.props.errors.error_msg = "";
-        }, 
+        },
         slowAlertClose() {
             setTimeout(() => {
                 this.closeAlert();
-            },  1500)  
+            },  1500)
         }
     },
     beforeRouteLeave: function(to, from, next) {

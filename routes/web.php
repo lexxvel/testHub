@@ -4,7 +4,9 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\IndexController;
 use App\Http\Controllers\Api\v1\UserController;
 use App\Http\Controllers\Api\v1\ProjectController;
+use App\Http\Controllers\Api\v1\TasksController;
 use Illuminate\Support\Facades\Route;
+use \App\Http\Controllers\Api\v1\StepsController;
 
 //Route::get('/login', [\App\Http\Controllers\IndexController::class, 'login'])->name('login');
 
@@ -23,6 +25,15 @@ Route::middleware('auth')
     Route::post('/project/store', [ProjectController::class, 'store'])->name('projects.store');
     Route::get('/project/edit', [ProjectController::class, 'edit'])->name('projects.edit');
     Route::post('/project/update', [ProjectController::class, 'update'])->name('projects.update');
+
+    Route::get('/tasks', [TasksController::class, 'index'])->name('tasks');
+    Route::get('/task/create', [TasksController::class, 'create'])->name('tasks.create');
+    Route::post('/task/store', [TasksController::class, 'store'])->name('tasks.store');
+    Route::get('/task/edit', [TasksController::class, 'edit'])->name('tasks.edit');
+    Route::post('/task/update', [TasksController::class, 'update'])->name('tasks.update');
+
+    Route::post('/steps/store', [StepsController::class, 'store'])->name('steps.store');
+    Route::post('/steps/getStepsByTask', [StepsController::class, 'getStepsByTask'])->name('steps.get');
 });
 
 

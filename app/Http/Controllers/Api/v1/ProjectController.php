@@ -117,7 +117,7 @@ class ProjectController extends Controller
                 'Project_isCommon' => $projectIsCommon,
                 'created_at' => now()
             ]);
-    
+
             if ($result === 1 || $result === true) {
                 return [
                     "status" => "true",
@@ -132,7 +132,7 @@ class ProjectController extends Controller
         }
     }
 
-        /**
+    /**
      *  Редактирование проекта - запись в БД
      *  @return JSON результата запроса
      */
