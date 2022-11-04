@@ -265,8 +265,10 @@ export default {
         loading: false,
         userClickedSave : false,
         minimalToolbar: [
-            ['bold', 'italic', 'underline'],
-            [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'align': [] }]
+            ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+            [{ 'indent': '-1'}, { 'indent': '+1' }],          // outdent/indent
+            [{ 'size': ['small', false, 'large'] }],  // custom dropdown
         ]
     }),
     setup(props) {
@@ -307,7 +309,7 @@ export default {
             this.userClickedSave = false;
         }
 
-        return {form, update};
+        return {form, update, removeBeforeEventListener};
 
     },
     mounted() {
@@ -322,6 +324,13 @@ export default {
         window.removeEventListener('beforeunload', this.controlExit);
     },
     methods: {
+        controlExit(e) {
+            if (this.userClickedSave === true) {
+                return;
+            }
+            e.preventDefault();
+            e.returnValue = '';
+        },
         logger(msg) {
             console.log(msg)
         },
