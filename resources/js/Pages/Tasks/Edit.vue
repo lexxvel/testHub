@@ -99,14 +99,14 @@
                         </div>
                     </div>
                 </div>
-
-                <div class="formCaseBody">
+                <spin v-if="loading"></spin>
+                <div v-if="!loading" class="formCaseBody">
 
                     <div class="formCaseBodySteps mb-5">
                         <p class="mb-1" >Шаги:</p>
                         <div class="formCaseBodyStepsContainer">
-                            <spin v-if="loading"></spin>
-                            <div v-if="!loading && steps.length > 0" v-for="step in steps" class="stepContainer border border-solid border-gray-300 rounded">
+
+                            <div v-if="!loading" v-for="step in steps" class="stepContainer border border-solid border-gray-300 rounded">
                                 <div class="stepInfo">
                                     <div class="stepNumber">
                                         <p>{{step.Step_Number}}</p>
@@ -206,8 +206,10 @@
                 <div class="form-group form-check text-center mb-6 ">
                 </div>
                 <button
-                    @click="this.userClickedSave = true; this.setStepsInForm()"
-                    type="submit" class="
+                    :disabled="this.loading"
+                    @click="this.setStepsInForm()"
+                    type="submit"
+                    class="
             w-full
             px-6
             xl:w-96
@@ -260,6 +262,21 @@ export default {
             'caseStatuses'
         ])
     },
+    created() {
+        this.postIsSuccess = true;
+        this.$watch('$page.props.errors.error_msg', function (newValue) {
+            this.postIsSuccess = true;
+            if (this.$page.props.errors.error_msg !== "" || this.$page.props.errors.error_msg) {
+                var _msg2 = this.$page.props.errors.msg;
+                this.$page.props.errors.msg = "";
+                this.postIsSuccess = false;
+                UIkit.notification({
+                    message: "success",
+                    status: 'success'
+                });
+            }
+        });
+    },
     data:() => ({
         steps: [],
         loading: false,
@@ -272,16 +289,6 @@ export default {
         ]
     }),
     setup(props) {
-        let removeBeforeEventListener = Inertia.on('before', (event) => {
-            if (form.isDirty) {
-                if (!confirm('Кейс не сохранен. Выйти?')) {
-                    event.preventDefault()
-                } else {
-                    removeBeforeEventListener();
-                }
-            }
-        });
-
         const form = useForm({
             Task_id : props.task.Task_id,
             Task_JiraProject: props.task.Task_JiraProject,
@@ -295,35 +302,30 @@ export default {
 
         function update() {
             this.userClickedSave = true;
-            removeBeforeEventListener();
+            window.removeEventListener('beforeunload', this.controlExit);
             form.post(route('tasks.update'))
-            removeBeforeEventListener =  Inertia.on('before', (event) => {
-                if (form.isDirty && this.userClickedSave == false) {
-                    if (!confirm('Кейс не сохранен. Выйти?')) {
-                        event.preventDefault()
-                    } else {
-                        removeBeforeEventListener();
-                    }
-                }
-            });
-            this.userClickedSave = false;
         }
-
-        return {form, update, removeBeforeEventListener};
-
+        return {form, update};
     },
     mounted() {
+        window.removeEventListener('beforeunload', this.controlExit);
         this.form.Task_Project = this.prefProject
-        this.loading = true
         setTimeout(() => {
             this.getSteps()
         },  1000)
         window.addEventListener('beforeunload', this.controlExit);
+        this.loading = true;
     },
     unmounted() {
         window.removeEventListener('beforeunload', this.controlExit);
     },
     methods: {
+        changeLoading() {
+            setTimeout(() => {
+                this.loading = !this.loading
+            },  2000)
+
+        },
         controlExit(e) {
             if (this.userClickedSave === true) {
                 return;
@@ -342,10 +344,9 @@ export default {
                 .then(res => {
                     forEach (res.data, (value) => {
                         this.steps.push({Step_Action: JSON.parse(value.Step_Action), Step_Result: JSON.parse(value.Step_Result), Step_Number: value.Step_Number})
+
                     })
-                    setTimeout(() => {
-                        this.loading = false
-                    },  300)
+                    this.loading = false;
                 })
         },
         deleteStep(id) {

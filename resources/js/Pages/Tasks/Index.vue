@@ -6,7 +6,7 @@
     </div>
 
     <Link :href="route('tasks.create')" class="text-blue-600 hover:text-blue-900 my-5 block">
-        Добавить задачу
+        Добавить
     </Link>
 
     <div class="tasksForm">
@@ -14,18 +14,18 @@
             <div class="grid" style="width: 100%;">
 
                 <div class="taskCard">
-                    <div class="taskCardNumber border-gray-300 text-gray-900">
+                    <div class="taskCardNumber border-gray-300 text-gray-300">
                         <p style="margin-left: 6px">Задача</p>
                     </div>
 
                     <div class="taskPriority">
-                        Приоритет
+
                     </div>
 
-                    <div class="taskCardName border-gray-300 text-gray-900" style="text-align:center">
+                    <div class="taskCardName border-gray-300 text-gray-300" style="text-align:left">
                         <p>Название</p>
                     </div>
-                    <div class="taskStage border-gray-300 text-gray-900">
+                    <div class="taskStage border-gray-300 text-gray-300">
                         <p>Статус</p>
                     </div>
                 </div>
@@ -47,7 +47,7 @@
                             <p>{{task.Task_Name}}</p>
                         </div>
                         <div class="taskStage border-gray-300 text-gray-900">
-                            <p style="height: 30px; overflow: hidden;">{{taskStages[task.Task_Stage].stage}}</p>
+                            <p style="height: 30px; overflow: hidden;">{{caseStatuses[task.Task_Stage].status}}</p>
                         </div>
                     </Link>
 
@@ -120,7 +120,7 @@ export default {
     computed : {
         ...mapGetters ([
           'prefProject',
-          'taskStages',
+          'caseStatuses',
           'priorityImagesLinks'
         ])
     },

@@ -17,12 +17,12 @@ class TasksController extends Controller
         if ($tasksProject === null) {
             $result = [
                 'status' => 'false',
-                'error_msg' => 'Для просмотра задач требуется указать проект'
+                'error_msg' => 'Для просмотра задач требуется выбрать проект'
             ];
             return redirect()->route('projects')->withErrors($result);
         } else {
             return Inertia::render('Tasks/Index', [
-                'title' => 'Задачи',
+                'title' => 'Тест-кейсы',
                 'tasks' => Tasks::where('Task_Project', $tasksProject)->get(),
             ]);
         }

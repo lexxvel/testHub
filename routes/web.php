@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\v1\RunsController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\IndexController;
 use App\Http\Controllers\Api\v1\UserController;
@@ -34,6 +35,11 @@ Route::middleware('auth')
 
     Route::post('/steps/store', [StepsController::class, 'store'])->name('steps.store');
     Route::post('/steps/getStepsByTask', [StepsController::class, 'getStepsByTask'])->name('steps.get');
+
+    Route::get('/runs', [RunsController::class, 'index'])->name('runs');
+    Route::get('/run/create', [RunsController::class, 'create'])->name('runs.create');
+    Route::post('/run/store', [RunsController::class, 'store'])->name('runs.store');
+    Route::get('/run/edit', [RunsController::class, 'edit'])->name('runs.edit');
 });
 
 

@@ -9,11 +9,6 @@ const store = createStore({
     state: {
         preferProject: VueCookieNext.getCookie('prefProject'), // localStorage.getItem('prefProject') || '',
         preferProjectId: VueCookieNext.getCookie('prefProjectId'), //localStorage.getItem('prefProjectId') || '',
-        taskStages: [
-            {'id': 0, 'stage': 'Не готов'},
-            {'id': 1, 'stage': 'Требует доработки'},
-            {'id': 2, 'stage': 'Готов'}
-        ],
         priorityImagesLinks: [
             {'id': 0, 'link': '/lowPriority.svg'},
             {'id': 1, 'link': '/mediumPriority.svg'},
@@ -39,6 +34,17 @@ const store = createStore({
             {'id': 0, 'status': 'Не готов', 'class': 'bg-red-100'},
             {'id': 1, 'status': 'Требует доработки', 'class': 'bg-yellow-100'},
             {'id': 2, 'status': 'Готов', 'class': 'bg-green-100'},
+        ],
+        testrunStatuses: [
+            {'id': 0, 'status': "Новый"},
+            {'id': 1, 'status': "В процессе"},
+            {'id': 2, 'status': "Завершен"}
+        ],
+        testrunType: [
+            {'id': 0, 'type': "Спринт"},
+            {'id': 1, 'type': "Релиз"},
+            {'id': 2, 'type': "Миграция"},
+            {'id': 3, 'type': "Регресс"},
         ]
     },
     mutations: {
@@ -66,7 +72,9 @@ const store = createStore({
         priorityImagesLinks(state) { return state.priorityImagesLinks },
         jiraProjects(state) { return state.jiraProjects },
         taskPriorities(state) { return state.taskPriorities },
-        caseStatuses(state) { return state.caseStatus }
+        caseStatuses(state) { return state.caseStatus },
+        testrunStatuses(state) { return state.testrunStatuses },
+        testrunTypes(state) { return state.testrunType }
       }
   })
 

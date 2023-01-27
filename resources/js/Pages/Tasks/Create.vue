@@ -272,16 +272,6 @@ export default {
         ]
     }),
     setup() {
-        let removeBeforeEventListener = Inertia.on('before', (event) => {
-            if (form.isDirty) {
-                if (!confirm('Кейс не сохранен. Выйти?')) {
-                    event.preventDefault()
-                } else {
-                    removeBeforeEventListener();
-                }
-            }
-        });
-
         const form = useForm({
             Task_JiraProject: "PROMEDWEB",
             Task_Number: null,
@@ -295,18 +285,7 @@ export default {
 
         function store() {
             this.userClickedSave = true;
-            removeBeforeEventListener();
             form.post(route('tasks.store'))
-            removeBeforeEventListener =  Inertia.on('before', (event) => {
-                if (form.isDirty && this.userClickedSave == false) {
-                    if (!confirm('Кейс не сохранен. Выйти?')) {
-                        event.preventDefault()
-                    } else {
-                        removeBeforeEventListener();
-                    }
-                }
-            });
-            this.userClickedSave = false;
         }
 
         return {form, store};
