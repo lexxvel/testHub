@@ -9,7 +9,7 @@
       <form @submit.prevent="login">
         <div class="form-group mb-6">
           <label for="exampleInputEmail2" class="form-label inline-block mb-2 text-gray-700">Логин</label>
-          <input 
+          <input
             v-model="form.email"
             :class="{'border-red-500': form.errors.email}"
             type="text" class="form-control
@@ -28,12 +28,12 @@
             m-0
             focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none" id="exampleInputEmail2"
             aria-describedby="emailHelp" placeholder="Введите логин">
-            
+
             <div v-if="form.errors.email" class="text-red-500 mt-2"> {{form.errors.email}}</div>
-        </div> 
+        </div>
         <div class="form-group mb-6">
           <label for="exampleInputPassword2" class="form-label inline-block mb-2 text-gray-700">Пароль</label>
-          <input 
+          <input
             v-model="form.password"
             :class="{'border-red-500': form.errors.password}"
             type="password" class="form-control block
@@ -86,6 +86,10 @@
 
 <script>
 import {Head, useForm} from '@inertiajs/inertia-vue3'
+import axios from "axios";
+import {VueCookieNext} from "vue-cookie-next";
+
+window.csrf_token = "{{ csrf_token() }}"
 
 export default {
     components: {
@@ -99,10 +103,14 @@ export default {
     setup() {
         const form = useForm({
             email: null,
-            password: null
+            password: null,
+            PrefProjectId: null
         });
 
         function login() {
+            if (VueCookieNext.getCookie('prefProjectId') && VueCookieNext.getCookie('prefProjectId') !== null) {
+                form.PrefProjectId = Number.parseInt(VueCookieNext.getCookie('prefProjectId'));
+            }
             form.post(route('login'))
         }
 
@@ -125,7 +133,7 @@ export default {
     left: 0;
     overflow: auto;
   }
-  
+
   .loginForm {
     width: 30%;
     height: auto;

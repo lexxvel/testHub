@@ -12,10 +12,9 @@
     <div class="AddCaseForm">
 
         <div class="block p-6 ">
-            <form @submit.prevent="update">
-
+            <form >
                 <div class="formCaseTitle">
-                    <div class="formCaseTitleProject">
+                    <div v-if="task.Task_isForRegress !== 2" class="formCaseTitleProject">
                         <div class="flex">
                             <div class="mb-3 xl:w-96">
                                 <select
@@ -41,7 +40,8 @@
                             </div>
                         </div>
                     </div>
-                    <div class="formCaseTitleNumber">
+
+                    <div v-if="task.Task_isForRegress !== 2" class="formCaseTitleNumber">
                         <div class="flex">
                             <div class="mb-3 xl:w-96">
                                 <input
@@ -72,6 +72,7 @@
                             </div>
                         </div>
                     </div>
+
                     <div class="formCaseTitleName">
                         <div class="flex">
                             <div class="mb-3" style="width: 100%">
@@ -101,6 +102,7 @@
                 </div>
                 <spin v-if="loading"></spin>
                 <div v-if="!loading" class="formCaseBody">
+
 
                     <div class="formCaseBodySteps mb-5">
                         <p class="mb-1" >Шаги:</p>
@@ -136,7 +138,35 @@
                         </div>
                     </div>
 
-                    <div class="formCaseBodyAdditionalFields">
+                    <div class="formCaseBodyAdditionalFields ">
+
+                        <div style="display: block; justify-content: center; align-items: center" class="formCaseVerions">
+
+                            <Dropdown :type="'versions'"
+                                      :name="'Версия '+actualVer"
+                                      :caseVersions="versions"
+                                      :selected="actualVer"
+                                      @select-item="changeVersion"
+                            >
+                            </Dropdown>
+
+                            <a
+                                @click="this.setActualVersion()"
+                                v-if="task.Task_ActualVersion !== actualVer && verChanged !== 2"
+                                style=" width: 50%; "
+                                class="
+                                    py-2.5 bg-red-300 text-white font-medium text-xs
+                                    leading-tight
+                                    uppercase
+                                    rounded
+                                    shadow-md
+                                    transition
+                                    duration-150
+                                    ease-in-out">
+                                Сделать актуальной
+                            </a>
+                        </div>
+
                         <div class="flex ">
                             <div class="mb-3 xl:w-96">
                                 <label for="exampleNumber0" class="form-label inline-block mb-2 text-gray-700">
@@ -205,9 +235,8 @@
 
                 <div class="form-group form-check text-center mb-6 ">
                 </div>
-                <button
-                    :disabled="this.loading"
-                    @click="this.setStepsInForm()"
+                <button v-if="buttonSave"
+                    @click="this.clickedSave()"
                     type="submit"
                     class="
             w-full
@@ -228,6 +257,26 @@
             transition
             duration-150
             ease-in-out">Сохранить</button>
+
+            <button v-if="!buttonSave"
+                    disabled
+                    type="submit"
+                    class="
+            w-full
+            px-6
+            xl:w-96
+            py-2.5
+            bg-gray-300
+            text-white
+            font-medium
+            text-xs
+            leading-tight
+            uppercase
+            rounded
+            shadow-md
+            transition
+            duration-150
+            ease-in-out">Сохранить</button>
             </form>
         </div>
     </div>
@@ -244,9 +293,12 @@ import axios from "axios";
 import {forEach} from "lodash";
 import Spin from "../../Elements/Spin";
 import {Inertia} from "@inertiajs/inertia";
+import Dropdown from "../../Shared/dropdown/Dropdown";
+import * as MyMethods from "../../methods"
+
 export default {
     components: {
-        Link, Head, QuillEditor, axios, forEach, Spin
+        Link, Head, QuillEditor, axios, forEach, Spin, Dropdown
     },
     name: "Edit",
     props: {
@@ -260,11 +312,14 @@ export default {
             'jiraProjects',
             'taskPriorities',
             'caseStatuses'
-        ])
+        ]),
+        buttonSave() {
+            return this.buttonSaveEnabled
+        }
     },
     created() {
-        this.postIsSuccess = true;
-        this.$watch('$page.props.errors.error_msg', function (newValue) {
+        //this.postIsSuccess = true;
+       /* this.$watch('$page.props.errors.error_msg', function (newValue) {
             this.postIsSuccess = true;
             if (this.$page.props.errors.error_msg !== "" || this.$page.props.errors.error_msg) {
                 var _msg2 = this.$page.props.errors.msg;
@@ -275,10 +330,14 @@ export default {
                     status: 'success'
                 });
             }
-        });
+        });*/
     },
     data:() => ({
+        buttonSaveEnabled: false,
         steps: [],
+        versions: [],
+        verChanged: 0,
+        actualVer: null,
         loading: false,
         userClickedSave : false,
         minimalToolbar: [
@@ -301,20 +360,21 @@ export default {
         });
 
         function update() {
-            this.userClickedSave = true;
             window.removeEventListener('beforeunload', this.controlExit);
             form.post(route('tasks.update'))
         }
         return {form, update};
     },
     mounted() {
+        this.loading = true;
         window.removeEventListener('beforeunload', this.controlExit);
         this.form.Task_Project = this.prefProject
         setTimeout(() => {
-            this.getSteps()
+            this.getSteps();
+            this.getVersions();
         },  1000)
         window.addEventListener('beforeunload', this.controlExit);
-        this.loading = true;
+        this.actualVer = this.task.Task_ActualVersion
     },
     unmounted() {
         window.removeEventListener('beforeunload', this.controlExit);
@@ -327,7 +387,7 @@ export default {
 
         },
         controlExit(e) {
-            if (this.userClickedSave === true) {
+            if (this.buttonSaveEnabled === false) {
                 return;
             }
             e.preventDefault();
@@ -340,13 +400,19 @@ export default {
             this.steps.push({Step_Action: "", Step_Result: "", Step_Number: this.steps.length + 1})
         },
         getSteps() {
-            axios.post('/steps/getStepsByTask', {'Task_id': this.form.Task_id})
+            let stepCounter = 0;
+            axios.post('/api/caseVersion/getActualSteps', {'Task_id': this.form.Task_id})
                 .then(res => {
-                    forEach (res.data, (value) => {
-                        this.steps.push({Step_Action: JSON.parse(value.Step_Action), Step_Result: JSON.parse(value.Step_Result), Step_Number: value.Step_Number})
+                    console.log(res.data)
+                    this.steps = res.data;
+                    /*forEach (res.data, (value) => {
 
-                    })
+                       // this.steps.push({Step_Action: value.Step_Action, Step_Result: value.Step_Result, Step_Number: value.Step_Number});
+                       // this.steps.push({Step_Action: JSON.parse(value.Step_Action), Step_Result: JSON.parse(value.Step_Result), Step_Number: stepCounter});
+                        ++stepCounter;
+                    })*/
                     this.loading = false;
+                    this.buttonSaveEnabled = true;
                 })
         },
         deleteStep(id) {
@@ -380,10 +446,52 @@ export default {
         setStepsInForm() {
             this.form.steps = this.steps;
         },
+        clickedSave() {
+            this.buttonSaveEnabled=false;
+            this.loading=true;
+            this.setStepsInForm();
+            this.update();
+        },
+        getVersions() {
+            this.loading = true;
+            this.versions = [];
+            axios
+                .post('/api/caseVersion/getVersionsByTask', {'Task_id': this.form.Task_id})
+                .then(res => {
+                    this.versions = res.data;
+                    this.loading = false;
+                    this.buttonSaveEnabled = true;
+            })
+        },
+        changeVersion(id) {
+            this.steps = [];
+            let selectedVerSteps = MyMethods.findArrayElementById(this.versions, id, 'steps');
+            console.log(selectedVerSteps)
+            this.steps = JSON.parse(selectedVerSteps)
+            this.actualVer = id;
+            this.verChanged = 1;
+        },
+        setActualVersion() {
+            axios.post('/api/case/changeActualVersion', {
+                'version': this.actualVer,
+                'Task_id': this.form.Task_id
+            }).then(res => {
+                    if (res.data.status === true) {
+                        this.verChanged = 2;
+                    } else {
+
+                    }
+                }
+            )
+            this.actualVer
+        }
     }
 }
 </script>
 
 <style scoped>
-
+.formCaseVerions {
+    height: auto;
+    margin-bottom: 10px;
+}
 </style>

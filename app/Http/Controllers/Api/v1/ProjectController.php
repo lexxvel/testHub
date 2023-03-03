@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Api\v1;
 use App\Models\Project;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Js;
 use Inertia\Inertia;
+use Psy\Util\Json;
 
 class ProjectController extends Controller
 {
@@ -110,12 +112,15 @@ class ProjectController extends Controller
                 "msg" => "Проект не создан, название использовано ранее"
             ];
         } else {
-
+            $defaultTree = "{id: 0,name: 'Проект',id_counter: 4,root: true,children:
+            [{ id: 1, name: 'Текучка', root: true, },{ id: 2, name: 'Архив', root: true, },
+            { id: 3, name: 'Регресс', root: true, }]}";
             $result = Project::insert([
                 'Project_Name' => $projectName,
                 'Project_About' => $projectAbout,
                 'Project_isCommon' => $projectIsCommon,
-                'created_at' => now()
+                'created_at' => now(),
+                'Project_CasesTree' => $defaultTree
             ]);
 
             if ($result === 1 || $result === true) {
@@ -169,5 +174,32 @@ class ProjectController extends Controller
                 ];
             }
         }
+    }
+
+    /**
+     * Установка избранного проекта
+     *
+     * @param Request $request
+     */
+    public function setPrefProject(Request $request) {
+        $prefProject = $request->request->get('Project_id');
+        $curProject = $request->session()->get('prefProject');
+        if ($curProject == null) {
+            $request->session()->put('prefProject', $prefProject);
+        } else {
+            $request->session()->put('prefProject', $prefProject);
+        }
+    }
+
+    /**
+     * Установка избранного проекта
+     *
+     * @param Request $request
+     * @return string Дерево проекта
+     */
+    public function getProjectTree(Request $request): string
+    {
+        $Project_id = $request->input("Project_id");
+        return Project::where('Project_id', $Project_id)->first()->Project_CasesTree;
     }
 }

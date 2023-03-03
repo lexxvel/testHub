@@ -15,6 +15,11 @@ class UserController extends Controller
         return User::all();
     }
 
+    public function getUserByEmail(Request $request) {
+        $email = $request->input('email');
+        return User::where('email', $email)->first();
+    }
+
     public function index() {
         return Inertia::render('Users/Index', [
             'title' => 'Пользователи',
@@ -94,7 +99,7 @@ class UserController extends Controller
 
         $userPassword = $request->input("password");
         $cryptedUserPassword = bcrypt($userPassword);
-        
+
         $isExist = User::where('email', 'like', $userName)->get()->count();
 
         if ($isExist > 0) {
@@ -109,7 +114,7 @@ class UserController extends Controller
                 'password' => $cryptedUserPassword,
                 'User_Role' => 1
             ]);
-    
+
             if ($result === 1 || $result === true) {
                 return [
                     "status" => "true",

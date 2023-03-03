@@ -37,7 +37,7 @@
                             {{user.email}}
                         </td>
                         <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                            {{user.User_Role}}
+                            {{findArrayElementById(userRoles, user.User_Role, 'role')}}
                         </td>
                         <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
                             Команда
@@ -72,6 +72,9 @@ import {Head, Link} from '@inertiajs/inertia-vue3'
 import Pagination from '../../Shared/Pagination.vue'
 import { default as Spin} from '../../Elements/Spin.vue'
 import axios from 'axios'
+import {mapGetters} from "vuex";
+import * as myMethods from "../../methods";
+
 export default {
     data:() => ({
         loading: false,
@@ -115,6 +118,11 @@ export default {
         title: String,
         users: Object
     },
+    computed : {
+    ...mapGetters ([
+            'userRoles',
+        ])
+    },
     methods: {
         async deleteUser(id) {
             this.loading = true;
@@ -138,12 +146,16 @@ export default {
             setTimeout(() => {
                 this.closeAlert();
             },  1500)
+        },
+        findArrayElementById(array, id, element) {
+            return myMethods.findArrayElementById(array, id, element);
         }
+
     },
     beforeRouteLeave: function(to, from, next) {
     confirm('Are you sure')
     next();
-}
+    }
 }
 </script>
 

@@ -3,17 +3,17 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
+use App\Models\Project;
 use App\Models\Steps;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Tasks;
-use App\Http\Controllers\Api\v1\StepsController;
 
 class TasksController extends Controller
 {
 
     public function index(Request $request) {
-        $tasksProject = $request->input('Project_id');
+        $tasksProject = $request->session()->get('prefProject');
         if ($tasksProject === null) {
             $result = [
                 'status' => 'false',
@@ -21,16 +21,27 @@ class TasksController extends Controller
             ];
             return redirect()->route('projects')->withErrors($result);
         } else {
+            //$tree = Project::where('Project_id', $tasksProject)->first()->Project_CasesTree;
+            $request->request->set('Project_id', $tasksProject);
+            $tree = (new ProjectController)->getProjectTree($request);
             return Inertia::render('Tasks/Index', [
                 'title' => 'Тест-кейсы',
-                'tasks' => Tasks::where('Task_Project', $tasksProject)->get(),
+                'tasks' => $this->getCasesByProject($request),
+                'tree' => $tree
             ]);
         }
     }
 
-    public function create() {
+    public function getCasesByProject(Request $request) {
+        $tasksProject = $request->input("Project_id");
+        return Tasks::where('Task_Project', $tasksProject)->get();
+    }
+
+    public function create(Request $request) {
+        $selected = $request->input('selected');
         return Inertia::render('Tasks/Create', [
             'title' => 'Создание кейса',
+            'selectedFolder' => $selected
         ]);
     }
 
@@ -81,20 +92,32 @@ class TasksController extends Controller
      *  @return JSON результата запроса
      */
     public function addTask(Request $request) {
-        $request->validate([
-            'Task_JiraProject' => 'required|max:255',
-            'Task_Name' => 'required|max:255',
-            'Task_Number' => 'required|max:255',
-            'Task_Priority' => 'required|max:255',
-            'Task_Stage' => 'required|max:255',
-            'Task_Project' => 'required|max:255',
-        ]);
+        $isForRegress = $request->input("Task_isForRegress");
+
+        if ($isForRegress === true) {
+            $request->validate([
+                'Task_Name' => 'required|max:255',
+                'Task_Priority' => 'required|max:255',
+                'Task_Stage' => 'required|max:255',
+                'Task_Project' => 'required|max:255',
+            ]);
+        } else {
+            $request->validate([
+                'Task_JiraProject' => 'required|max:255',
+                'Task_Name' => 'required|max:255',
+                'Task_Number' => 'required|max:255',
+                'Task_Priority' => 'required|max:255',
+                'Task_Stage' => 'required|max:255',
+                'Task_Project' => 'required|max:255',
+            ]);
+        }
         $JiraProject = $request->input("Task_JiraProject");
         $Name = $request->input("Task_Name");
         $Number = $request->input("Task_Number");
         $Priority = $request->input("Task_Priority");
         $Stage = $request->input("Task_Stage");
         $Project = $request->input("Task_Project");
+        $Folder = $request->input("Task_Folder");
 
         $result = Tasks::insert([
             'Task_JiraProject' => $JiraProject,
@@ -103,13 +126,34 @@ class TasksController extends Controller
             'Task_Priority' => $Priority,
             'Task_Stage' => $Stage,
             'Task_Project' => $Project,
+            'Task_isForRegress' => $isForRegress,
+            'Task_Folder' => $Folder,
+            'Task_ActualVersion' => 1,
             'created_at' => now()
         ]);
 
         if ($result === 1 || $result === true) {
             $newTaskId = Tasks::orderBy('Task_id', 'DESC')->first()->Task_id;
-            $steps = $request->input("steps");
-
+            //$steps = $request->input("steps");
+            $request->request->add(['Task_id' => $newTaskId]);
+            $CreateVersionResult = (new CaseVersionsController())->create($request);
+            if ($CreateVersionResult['status'] == true) {
+                return [
+                    "status" => true,
+                    "msg" => "Кейс создан. ".$CreateVersionResult['msg']
+                ];
+            } else if ($CreateVersionResult['status'] == false) {
+                return [
+                    "status" => true,
+                    "error_msg" => $CreateVersionResult['error_msg']
+                ];
+            } else {
+                return [
+                    "status" => true,
+                    "error_msg" => $CreateVersionResult
+                ];
+            }
+            /*
             foreach ($steps as $step) {
                 Steps::insert([
                     "Task_id" => $newTaskId,
@@ -121,7 +165,7 @@ class TasksController extends Controller
             return [
                 "status" => "true",
                 "msg" => "Кейс создан"
-            ];
+            ];*/
         } else {
             return [
                 "status" => "false",
@@ -162,26 +206,45 @@ class TasksController extends Controller
             ]);
             if ($result === 1 || $result === true) {
 
-                Steps::where('Task_id', $taskId)->delete();
-                $steps = $request->input("steps");
-                foreach ($steps as $step) {
-                    Steps::insert([
-                        "Task_id" => $taskId,
-                        "Step_Number" => $step['Step_Number'],
-                        "Step_Action" => json_encode($step['Step_Action']),
-                        "Step_Result" => json_encode($step['Step_Result'])
-                    ]);
-                }
+                //Steps::where('Task_id', $taskId)->delete();
+                //$steps = $request->input("steps");
 
-                return [
-                    "status" => "true",
-                    "msg" => "Кейс обновлен"
-                ];
-            } else {
-                return [
-                    "status" => "false",
-                    "error_msg" => "При редактировании кейса произошла ошибка"
-                ];
+                $CreateVersionResult = (new CaseVersionsController())->create($request);
+                if ($CreateVersionResult['status'] == true) {
+                    return [
+                        "status" => true,
+                        "msg" => "Кейс обновлен. " . $CreateVersionResult['msg']
+                    ];
+                } else if ($CreateVersionResult['status'] == false) {
+                    return [
+                        "status" => true,
+                        "error_msg" => $CreateVersionResult['error_msg']
+                    ];
+                } else {
+                    return [
+                        "status" => true,
+                        "error_msg" => $CreateVersionResult
+                    ];
+                }
             }
+    }
+
+    public function changeActualVersion(Request $request) {
+        $version = $request->input("version");
+        $Task_id = $request->input("Task_id");
+        $result = Tasks::where('Task_id', $Task_id)->update([
+           'Task_ActualVersion' => $version
+        ]);
+        if ($result === 1 || $result === true) {
+            return [
+                "status" => true,
+                "msg" => "Актуальная версия изменена"
+            ];
+        } else {
+            return [
+                "status" => false,
+                "msg" => "Актуальная версия не изменена"
+            ];
+        }
     }
 }

@@ -4,7 +4,7 @@
     <div class="FormTitle">
         <h2>{{title}}</h2>
     </div>
-    
+
     <Link :href="route('projects.create')" class="text-blue-600 hover:text-blue-900 my-5 block">
         Добавить проект
     </Link>
@@ -34,7 +34,9 @@
 import {Head, Link} from '@inertiajs/inertia-vue3'
 import { default as Spin} from '../../Elements/Spin.vue'
 import { VueCookieNext } from 'vue-cookie-next'
+import axios from "axios";
 
+window.csrf_token = "{{ csrf_token() }}"
 export default {
 
     props: {
@@ -43,12 +45,12 @@ export default {
     },
     components: {
         Head, Link, Spin
-    }, 
+    },
     data:() => ({
         loading: false,
     }),
     created() {
-    
+
         if (this.$page.props.errors.error_msg !== "" && this.$page.props.errors.error_msg) {
                 let msg = this.$page.props.errors.error_msg;
                 this.$page.props.errors.error_msg = "";
@@ -59,10 +61,10 @@ export default {
                 let msg = this.$page.props.errors.msg;
                 this.$page.props.errors.msg = "";
                 UIkit.notification({message: msg, status: 'success'});
-        }        
-        
+        }
+
         this.$watch('$page.props.errors.msg', (newValue) => {
-            
+
             if (this.$page.props.errors.msg !== "" && this.$page.props.errors.msg) {
                 let msg = this.$page.props.errors.msg;
                 this.$page.props.errors.msg = "";
@@ -81,12 +83,13 @@ export default {
     },
     methods: {
         preferProject(name, id) {
+            axios.post('api/projects/setPreferred', {'Project_id': id}, )
             this.$store.dispatch('setPreferProject', {name, id})
         }
     }
 }
 </script>
-    
+
 <style>
 .projectsForm{
     width: 100%;

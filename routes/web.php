@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\v1\RunResultsController;
 use App\Http\Controllers\Api\v1\RunsController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\IndexController;
@@ -40,6 +41,7 @@ Route::middleware('auth')
     Route::get('/run/create', [RunsController::class, 'create'])->name('runs.create');
     Route::post('/run/store', [RunsController::class, 'store'])->name('runs.store');
     Route::get('/run/edit', [RunsController::class, 'edit'])->name('runs.edit');
+    Route::get('/run/result', [RunResultsController::class, 'edit'])->name('runs.editRunResult');
 });
 
 

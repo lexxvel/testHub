@@ -14,7 +14,7 @@
         <form @submit.prevent="store">
 
             <div class="formCaseTitle">
-                <div class="formCaseTitleProject">
+                <div v-if="!form.Task_isForRegress" class="formCaseTitleProject">
                     <div class="flex">
                         <div class="mb-3 xl:w-96">
                             <select
@@ -41,7 +41,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="formCaseTitleNumber">
+                <div v-if="!form.Task_isForRegress"  class="formCaseTitleNumber">
                     <div class="flex">
                         <div class="mb-3 xl:w-96">
                             <input
@@ -93,7 +93,8 @@
                                 ease-in-out
                                 m-0
                                 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none" id="exampleInput125"
-                                placeholder="Название задачи">
+                                v-bind:placeholder="form.Task_isForRegress ? 'Наименование тест-кейса' : 'Название задачи'"
+                            >
                             <div v-if="form.errors.Task_Name" style="font-size: 13px; margin: 0;" class="text-red-500"> {{form.errors.Task_Name}}</div>
                         </div>
                     </div>
@@ -137,6 +138,18 @@
                 </div>
 
                 <div class="formCaseBodyAdditionalFields">
+
+                    <div class="flex">
+                        <div class="form-check">
+                            <input v-model="form.Task_isForRegress" class="form-check-input appearance-none h-4 w-4 border border-gray-300 rounded-sm bg-white checked:bg-blue-600 checked:border-blue-600 focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer" type="checkbox" value="2" id="flexCheckDefault">
+                            <label class="form-check-label inline-block text-gray-800" for="flexCheckDefault">
+                                Для регресса
+                            </label>
+                        </div>
+                    </div>
+
+                    <br>
+
                     <div class="flex ">
                         <div class="mb-3 xl:w-96">
                             <label for="exampleNumber0" class="form-label inline-block mb-2 text-gray-700">
@@ -168,7 +181,7 @@
                     </div>
 
 
-                    <div class="flex ">
+                    <div class="flex">
                         <div class="mb-3 xl:w-96">
                             <label for="exampleNumber0" class="form-label inline-block mb-2 text-gray-700">
                                 Статус кейса
@@ -195,9 +208,9 @@
                                 <option v-for="caseStatus in caseStatuses" :class="caseStatus.class" :value="caseStatus.id">{{caseStatus.status}}</option>
                             </select>
                         </div>
-
                         <div v-if="form.errors.Task_Stage" class="text-red-500 mt-2"> {{form.errors.Task_Stage}}</div>
                     </div>
+
                 </div>
 
 
@@ -211,7 +224,7 @@
             <div class="form-group form-check text-center mb-6 ">
             </div>
             <button
-                @click="this.userClickedSave = true; this.setStepsInForm()"
+                @click="this.userClickedSave = true; this.setStepsAndFolderInForm()"
                 type="submit" class="
             w-full
             px-6
@@ -251,7 +264,8 @@ export default {
         Link, Head, QuillEditor, Spin
     },
     props: {
-        title: String
+        title: String,
+        selectedFolder: Number
     },
     computed : {
         ...mapGetters ([
@@ -279,6 +293,8 @@ export default {
             Task_Priority: "1",
             Task_Stage: "0",
             Task_Project: "",
+            Task_isForRegress: false,
+            Task_Folder: null,
             steps: [],
         });
 
@@ -337,8 +353,12 @@ export default {
                 this.loading = false
             },  250)
         },
-        setStepsInForm() {
+        setStepsAndFolderInForm() {
             this.form.steps = this.steps;
+            this.form.Task_Folder = this.selectedFolder;
+            if (this.form.Task_isForRegress === true) {
+                this.form.Task_JiraProject = null;
+            }
         },
     }
 }

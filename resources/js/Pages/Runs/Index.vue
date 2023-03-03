@@ -15,8 +15,10 @@
                 <Link :href="route('runs.edit', {Run_id: run.Run_id})" style="color: black">
                 <div class="runCardStatus">
                     <div class="uk-inline">
-                        <a href="">статус: {{testrunStatuses[run.Run_Status].status}}</a>
-                        <div class="uk-card uk-card-body uk-card-default top-center	" uk-drop="mode: click" style="padding: 5px 5px 5px 5px; min-width: 200px; width: auto">
+                        <a href="">статус: {{ findArrayElementById(testrunStatuses, run.Run_Status, 'status')}}</a>
+                        <!-- https://tailwind-elements.com/docs/standard/components/popover/
+                            или https://tailwind-elements.com/docs/standard/components/dropdown/ -->
+                        <div class="uk-card uk-card-body uk-card-default top-center	" uk-drop="mode: click; pos: top-left" style="padding: 5px 5px 5px 5px; min-width: 200px; width: auto">
                             Выберите новый статус:
                             <div v-for="status in testrunStatuses">
                                 <a @click="this.changeRunStatus(run.Run_id, status.id)">{{status.status}}</a> <br>
@@ -33,10 +35,10 @@
 
                 </div>
                 <div class="runCardEndDate">
-                    Окончание: {{format_date(run.Run_EndDt)}}
+                    Окончание: {{formatDateToRussian(run.Run_EndDt)}}
                 </div>
                 <div class="runCardType">
-                    Тип: {{testrunTypes[run.Run_Type].type}}
+                    Тип: {{findArrayElementById(testrunTypes, run.Run_Type, 'type')}}
                 </div>
                 </Link>
             </div>
@@ -53,6 +55,7 @@ import {default as Spin} from "../../Elements/Spin";
 import {mapGetters} from "vuex";
 import moment from 'moment'
 import axios from "axios";
+import * as myMethods from "../../methods";
 
 export default {
     name: "Index",
@@ -107,10 +110,11 @@ export default {
         });
     },
     methods: {
-        format_date(value){
-            if (value) {
-                return moment(String(value)).format('DD.MM.YYYY')
-            }
+        findArrayElementById(array, id, element) {
+            return myMethods.findArrayElementById(array, id, element);
+        },
+        formatDateToRussian(value){
+            return myMethods.formatDateToRussian(value)
         },
         changeRunStatus(run, status) {
             axios.post('/api/run/changeStatus', {

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateRunResultsTable extends Migration
+class CreateCaseVersionsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,12 @@ class CreateRunResultsTable extends Migration
      */
     public function up()
     {
-        Schema::create('run_results', function (Blueprint $table) {
+        Schema::create('case_versions', function (Blueprint $table) {
             $table->id();
-            $table->integer("Run_id");
             $table->integer("Task_id");
-            $table->text("steps")->nullable();
-            $table->integer("User_id")->nullable();
-            $table->integer("RunResult_SectionId")->nullable();
-            $table->integer("Task_Version");
+            $table->integer("version");
+            $table->text("steps");
+            $table->integer("User_id");
             $table->timestamps();
         });
     }
@@ -32,6 +30,6 @@ class CreateRunResultsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('run_results');
+        Schema::dropIfExists('case_versions');
     }
 }

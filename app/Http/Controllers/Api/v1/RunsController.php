@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
 use Carbon\Carbon;
+use Illuminate\Contracts\Session\Session;
 use Illuminate\Http\Request;
 use App\Models\Runs;
 use Inertia\Inertia;
@@ -131,10 +132,16 @@ class RunsController extends Controller
      */
     public function edit(Request $request) {
         $runId = $request->input("Run_id");
-        $run = Runs::where('Run_id', $runId)->first();
+        $run = Runs::where('Run_id', $runId)
+            ->leftjoin('projects', 'runs.Project_id', '=', 'projects.Project_id')
+            ->first();
+        //$value = $request->session()->get('_token');
+        $value = $request->session()->get('user');
+        //dd($value['email']);
         return Inertia::render('Runs/Edit', [
             'title' => $run->Run_Name,
-            'run' => $run
+            'run' => $run,
+            'user' => $value
         ]);
     }
 

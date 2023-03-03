@@ -16,13 +16,13 @@ const store = createStore({
             {'id': 3, 'link': '/blockerPriority.svg'}
         ],
         jiraProjects: [
-            {'project' : 'PROMEDWEB'},
-            {'project' : 'MOBILEDEV'},
-            {'project' : 'PROMEDTEST'},
-            {'project' : 'PROMEDDEVOPS'},
-            {'project' : 'DESIGN'},
-            {'project' : 'RM'},
-            {'project' : 'PROMEDSKUF'},
+            {'id': 0, 'project' : 'PROMEDWEB'},
+            {'id': 1, 'project' : 'MOBILEDEV'},
+            {'id': 2, 'project' : 'PROMEDTEST'},
+            {'id': 3, 'project' : 'PROMEDDEVOPS'},
+            {'id': 4, 'project' : 'DESIGN'},
+            {'id': 5, 'project' : 'RM'},
+            {'id': 6, 'project' : 'PROMEDSKUF'},
         ],
         taskPriorities: [
             {'id': 0, 'priority': 'Низкий'},
@@ -45,6 +45,13 @@ const store = createStore({
             {'id': 1, 'type': "Релиз"},
             {'id': 2, 'type': "Миграция"},
             {'id': 3, 'type': "Регресс"},
+        ],
+        userRoles: [
+            {'id': 0, 'role': 'Наблюдатель'},
+            {'id': 1, 'role': 'Тестировщик'},
+            {'id': 99, 'role': 'Администратор'},
+            {'id': 3, 'role': 'Администратор'},
+            {'id': 2, 'role': 'Администратор'},
         ]
     },
     mutations: {
@@ -74,7 +81,8 @@ const store = createStore({
         taskPriorities(state) { return state.taskPriorities },
         caseStatuses(state) { return state.caseStatus },
         testrunStatuses(state) { return state.testrunStatuses },
-        testrunTypes(state) { return state.testrunType }
+        testrunTypes(state) { return state.testrunType },
+        userRoles(state) { return state.userRoles },
       }
   })
 
