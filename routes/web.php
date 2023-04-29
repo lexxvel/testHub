@@ -42,6 +42,8 @@ Route::middleware('auth')
     Route::post('/run/store', [RunsController::class, 'store'])->name('runs.store');
     Route::get('/run/edit', [RunsController::class, 'edit'])->name('runs.edit');
     Route::get('/run/result', [RunResultsController::class, 'edit'])->name('runs.editRunResult');
+
+    Route::post('/runResult/makeRun', [RunResultsController::class, 'store'])->name('runResults.makeRun');
 });
 
 

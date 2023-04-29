@@ -10,10 +10,6 @@ class StepsController extends Controller
 {
     public function store(Request $request) {
         $steps = $request->input["steps"];
-        dd($steps);
-        foreach ($steps as $step) {
-            dd($step);
-        }
     }
 
     public function getStepsByTask(Request $request) {

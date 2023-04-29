@@ -300,7 +300,7 @@ export default {
     components: {
         Link, Head, QuillEditor, axios, forEach, Spin, Dropdown
     },
-    name: "Edit",
+    name: "EditCaseForm",
     props: {
         title: String,
         task: Object

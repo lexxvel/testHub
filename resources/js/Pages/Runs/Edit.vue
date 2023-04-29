@@ -156,7 +156,7 @@ import CaseLineForRun from "../../Shared/CaseLineForRun";
 import {forEach} from "lodash";
 
 export default {
-    name: "Edit",
+    name: "RunPage",
     components : {
         TreeItem, Head, Spin, Link, CaseLine, CaseLineForRun
     },

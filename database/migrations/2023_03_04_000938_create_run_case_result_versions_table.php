@@ -17,8 +17,8 @@ class CreateRunCaseResultVersionsTable extends Migration
             $table->id();
             $table->integer('RunResult_id');
             $table->integer('RunStatus_id');
-            $table->text('RunResult_Comment');
-            $table->integer('RunResult_TimeSpent');
+            $table->text('RunResult_Comment')->nullable();
+            $table->integer('RunResult_TimeSpent')->nullable();
             $table->integer('User_id');
             $table->integer('version');
             $table->timestamps();

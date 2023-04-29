@@ -21,6 +21,25 @@ class CreateUsersTable extends Migration
             $table->rememberToken();
             $table->timestamps();
         });
+
+        /*
+         * $data =  array(
+            [
+                'name' => 'Category1',
+            ],
+            [
+                'name' => 'Category2',
+            ],
+            [
+                'name' => 'Category3',
+            ],
+        );
+        foreach ($data as $datum){
+            $category = new Category(); //The Category is the model for your migration
+            $category->name =$datum['name'];
+            $category->save();
+        }
+         */
     }
 
     /**

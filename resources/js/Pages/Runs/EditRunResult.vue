@@ -96,7 +96,7 @@
                         <div style="display: block; justify-content: center; align-items: center" class="formCaseVerions">
 
                             <Dropdown :type="'versions'"
-                                      :name="'Версия '+run.Task_Version"
+                                      :name="'Версия шагов '+run.Task_Version"
                                       :caseVersions="null"
                                       :selected="run.Task_Version"
                             >
@@ -127,7 +127,7 @@
                         <hr>
 
                         <div style="display: block; height: 100px; position: relative">
-                            <a @click="setResult(1)">
+                            <a @click="(lastResult && lastResult.RunStatus_id && !changeResult) ? null : setResult(1)">
                                 <div class="runResultButton runResultButtonSuccess"
                                      :class="{runResultButtonSuccessPicked : form.RunStatus_id === 1}"
                                      >
@@ -135,25 +135,46 @@
                                 </div>
                             </a>
 
-                            <a @click="setResult(3)">
+                            <a @click="(lastResult && lastResult.RunStatus_id && !changeResult) ? null : setResult(3)">
                                 <div class="runResultButton runResultButtonBlocked"
                                     :class="{runResultButtonBlockedPicked : form.RunStatus_id === 3}">
                                     Блокируется
                                 </div>
                             </a>
 
-                            <a @click="setResult(4)">
+                            <a @click="(lastResult && lastResult.RunStatus_id && !changeResult) ? null : setResult(4)">
                                 <div class="runResultButton runResultButtonNegative"
                                     :class="{runResultButtonNegativePicked : form.RunStatus_id === 4 }">
                                     Отрицательный
                                 </div>
                             </a>
-                            <a @click="setResult(2)">
+                            <a @click="(lastResult && lastResult.RunStatus_id && !changeResult) ? null : setResult(2)">
                                 <div class="runResultButton runResultButtonSkipped"
                                      :class="{runResultButtonSkippedPicked : form.RunStatus_id === 2 }">
                                    Пропущено
                                 </div>
                             </a>
+                        </div>
+
+                        <div id="resultInfo" v-if="lastResult" style="height: 100px; display: block">
+                            <p style="float: left; margin: 0 5px 0 0;">Версия № {{ lastResult.version }}; </p>
+                            <p style="float: left; margin: 0 0 0 0;">Дата прогона: {{ formatDateToRussian(lastResult.created_at) }}</p>
+                            <p style="float: left; margin: 0 0 0 0;">Прогонял: {{ lastResult.email }}</p>
+
+                            <button v-if="form.RunStatus_id && lastResult && !resultChanged"
+                                    @click="changeResultFunc()"
+                                    style="width: 75%; top:50%; left:50%; float: left"
+                                    class="mb-3 xl:w-96 px-6 xl:w-96 py-2.5 text-black font-medium text-xs leading-tight
+                                    uppercase rounded shadow-md hover:bg-gray-300
+                                    bg-gray-100 focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg
+                                    transition duration-150 ease-in-out"
+                            >Перепройти</button>
+
+                            <div style=" width: 30px; height: 30px; float: left">
+                                <a href="#modalCaseRunResultsHistory" uk-toggle style="height: 30px; width: 30px; margin: 0 0 0 0">
+                                    <img src="/img/other/history.png" alt="" style="height: 30px; width: 30px; margin: 0 0 0 0">
+                                </a>
+                            </div>
                         </div>
 
 
@@ -164,6 +185,7 @@
                                 </label>
                                 <textarea
                                     v-model="form.RunResult_Comment"
+                                    :disabled="lastResult && lastResult.RunResult_TimeSpent && !changeResult"
                                     class="
                                         form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700
                                         bg-white bg-clip-padding border border-solid border-gray-300 rounded
@@ -176,97 +198,102 @@
                             </div>
                         </div>
 
-                        <div style="display: block;">
+                        <div style="display: block; height: 100px; position: relative;">
                             <label for="exampleNumber0" class="form-label inline-block mb-2 text-gray-700">
                                 Времени затрачено
                             </label>
-                            <div style="display: block; height: auto; width: 100%">
-                            <input
-                                v-model="hoursSpent"
-                                style="float: left"
-                                @keypress="isNumber($event)"
-                                class="
-                                form-control
-                                block
-                                w-1/2
-                                px-3
-                                py-1.5
-                                text-base
-                                font-normal
-                                text-gray-700
-                                bg-white bg-clip-padding
-                                border border-solid border-gray-300
-                                rounded
-                                transition
-                                ease-in-out
-                                m-0
-                                focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none
-                                "
-                                id="hoursSpentInput"
-                                placeholder="часов"
-                            />
-                            <input
-                                v-model="minutesSpent"
-                                style="float: left"
-                                @keypress="isNumber($event)"
-                                :class="{'border-red-500': form.errors.Task_Number}"
-                                class="
-                                form-control
-                                block
-                                w-1/2
-                                px-3
-                                py-1.5
-                                text-base
-                                font-normal
-                                text-gray-700
-                                bg-white bg-clip-padding
-                                border border-solid border-gray-300
-                                rounded
-                                transition
-                                ease-in-out
-                                m-0
-                                focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none
-                                "
-                                id="minutesSpentInput"
-                                placeholder="минут"
-                            />
+                            <div style="display: block; height: auto; min-height: 40px; position: relative;">
+
+                                <div style="display: block; height: auto; min-height: 40px; position: relative; width: 50%; float: left">
+                                    <input
+                                        v-model="hoursSpent"
+                                        style="float: left"
+                                        @keypress="isNumber($event)"
+                                        class="form-control block w-8/12 px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding
+                                            border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700
+                                            focus:bg-white focus:border-blue-600 focus:outline-none"
+                                        id="hoursSpentInput"
+                                        :disabled="lastResult && lastResult.RunResult_TimeSpent && !changeResult"
+                                        placeholder="часов"
+                                    />
+                                    <p style="margin: 10px 0 0 0; width: 10px; float: left"> ч.</p>
+                                </div>
+                                <div style="display: block; height: auto; min-height: 40px; position: relative; width: 50%; float: left">
+                                    <input
+                                        v-model="minutesSpent"
+                                        style="float: left"
+                                        @keypress="isNumber($event)"
+                                        :disabled="lastResult && lastResult.RunResult_TimeSpent && !changeResult"
+                                        :class="{'border-red-500': form.errors.Task_Number}"
+                                        class="form-control block w-8/12 px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding
+                                            border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700
+                                            focus:bg-white focus:border-blue-600 focus:outline-none"
+                                        id="minutesSpentInput"
+                                        placeholder="минут"
+                                    />
+                                    <p style="margin: 10px 0 0 0; width: 10px; float: left"> мин.</p>
+                                </div>
                             </div>
                         </div>
 
-
-
                     </div>
 
-
                 </div>
+
+
+
+                <div id="modalCaseRunResultsHistory" uk-modal>
+                    <div class="modalCaseRunResultsHistory uk-modal-dialog">
+
+                        <button class="uk-modal-close-default" type="button" uk-close></button>
+
+                        <div class="uk-modal-header">
+                            <h2 class="uk-modal-title">История прогонов</h2>
+                        </div>
+
+                        <div class="uk-modal-body" uk-overflow-auto>
+                            <div class="ModalRunFormCases">
+                                <div style="display: grid;">
+                                    <div class="grid" style="width: 100%;">
+                                        <div v-if="lastResult" v-for="result in resultsList">
+                                            <div class="taskCard border-solid border border-grey-100 rounded-sm block hover:bg-gray-100">
+                                                <div class="caseRunResultIcon">
+                                                    <img v-bind:src="findArrayElementById(runResultsLinks, result.RunStatus_id, 'link')" alt="" style="height: 20px; width: 20px; margin-top: 5px; margin-bottom: 5px">
+                                                </div>
+                                                <p style="float: left; margin: 0 5px 0 0;">Версия № {{ result.version }}; </p>
+                                                <p style="float: left; margin: 0 5px 0 0;">Дата прогона: {{ formatDateToRussian(result.created_at) }} </p>
+                                                <p style="float: left; margin: 0 5px 0 0;"> Прогонял: {{ result.email }}</p>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="uk-modal-footer uk-text-right">
+                            <button style="margin-right: 10px" class="uk-button uk-button-default uk-modal-close" type="button">Отмена</button>
+                            <button @click="null" class="uk-button uk-button-primary uk-modal-close" type="button">Сохранить</button>
+                        </div>
+
+                    </div>
+                </div>
+
+
 
                 <div class="form-group form-check text-center mb-6 ">
                 </div>
-                <button v-if="buttonSave"
+                <button v-if="(form.RunStatus_id && !lastResult) || (lastResult && changeResult && form.RunStatus_id)"
                         @click="this.clickedSave()"
                         type="submit"
-                        class="
-            w-full
-            px-6
-            xl:w-96
-            py-2.5
-            bg-blue-600
-            text-white
-            font-medium
-            text-xs
-            leading-tight
-            uppercase
-            rounded
-            shadow-md
-            hover:bg-blue-700 hover:shadow-lg
-            focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0
-            active:bg-blue-800 active:shadow-lg
-            transition
-            duration-150
-            ease-in-out">Сохранить</button>
+                        class=" w-full px-6 xl:w-96 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight
+                        uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg
+                        focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
+                >Сохранить</button>
 
-                <button v-if="!buttonSave"
+                <button v-if="!form.RunStatus_id || (lastResult && !changeResult)"
                         disabled
+                        @click="null"
                         type="submit"
                         class="w-full px-6 xl:w-96 py-2.5 bg-gray-300 text-white
                                 font-medium text-xs leading-tight uppercase rounded shadow-md
@@ -295,10 +322,11 @@ export default {
     components: {
         Link, Head, QuillEditor, axios, forEach, Spin, Dropdown
     },
-    name: "Edit",
+    name: "RunResultEditForm",
     props: {
         title: String,
-        run: Object
+        run: Object,
+        lastResult: Object
     },
     computed : {
         ...mapGetters ([
@@ -306,16 +334,13 @@ export default {
             'prefProjectName',
             'jiraProjects',
             'taskPriorities',
-            'caseStatuses'
-        ]),
-        buttonSave() {
-            return this.buttonSaveEnabled
-        }
+            'caseStatuses',
+            'runResultsLinks'
+        ])
     },
     created() {
     },
     data:() => ({
-        buttonSaveEnabled: false,
         steps: [],
         loading: false,
         userClickedSave : false,
@@ -326,20 +351,24 @@ export default {
             [{ 'size': ['small', false, 'large'] }],  // custom dropdown
         ],
         minutesSpent: null,
-        hoursSpent: null
+        hoursSpent: null,
+        changeResult: false,
+        resultChanged: false,
+        resultsList: null
     }),
     setup(props) {
         const form = useForm({
             id: props.run.id,
+            Run_id: props.run.Run_id,
             User_id: null,
-            RunStatus_id: props.run.RunStatus_id,
-            RunResult_Comment: props.run.RunResult_Comment,
-            RunResult_TimeSpent: props.run.RunResult_TimeSpent,
+            RunStatus_id: null,
+            RunResult_Comment: null,
+            RunResult_TimeSpent: null,
         });
 
         function update() {
             window.removeEventListener('beforeunload', this.controlExit);
-            form.post(route('tasks.update'))
+            form.post(route('runResults.makeRun'))
         }
         return {form, update};
     },
@@ -352,6 +381,8 @@ export default {
         setTimeout(() => {
         },  1000)
         window.addEventListener('beforeunload', this.controlExit);
+        this.setResultInForm();
+        this.getResultsList();
     },
     unmounted() {
         window.removeEventListener('beforeunload', this.controlExit);
@@ -372,6 +403,19 @@ export default {
         },
         logger(msg) {
             console.log(msg)
+        },
+        //
+        setResultInForm() {
+            if (this.lastResult) {
+                this.lastResult.User_id ? this.form.User_id = this.lastResult.User_id : null;
+                this.lastResult.RunStatus_id ? this.form.RunStatus_id = this.lastResult.RunStatus_id : null
+                this.lastResult.RunResult_Comment ? this.form.RunResult_Comment = this.lastResult.RunResult_Comment : null
+                this.lastResult.RunResult_TimeSpent ? this.form.RunResult_TimeSpent = this.lastResult.RunResult_TimeSpent : null
+                if (this.lastResult.RunResult_TimeSpent) {
+                    this.minutesSpent = this.lastResult.RunResult_TimeSpent % 60
+                    this.hoursSpent = (this.lastResult.RunResult_TimeSpent - this.minutesSpent) / 60
+                }
+            }
         },
         setDataInForm() {
             this.form.User_id = this.$attrs.user.id
@@ -400,8 +444,33 @@ export default {
                 return true;
             }
         },
+        //метод установки результата при помощи кнопочек
         setResult: function (result) {
+            if (this.changeResult) {
+                this.resultChanged = true
+            }
             this.form.RunStatus_id = result;
+        },
+        changeResultFunc() {
+            this.changeResult = true;
+            this.form.RunStatus_id = null;
+            this.minutesSpent = null;
+            this.hoursSpent = null;
+            this.form.RunResult_Comment = null;
+            this.form.RunResult_TimeSpent = null;
+        },
+        formatDateToRussian(date) {
+            return MyMethods.formatDateToRussian(date)
+        },
+        findArrayElementById(array, id, element) {
+            return MyMethods.findArrayElementById(array, id, element)
+        },
+        getResultsList() {
+            axios
+                .post('/api/results/getResultsListByCase', {'Task_id': this.run.Task_id})
+                .then(res => {
+                    this.resultsList = res.data
+                })
         }
     }
 }
@@ -424,42 +493,59 @@ export default {
     float: left;
     display: block;
     border-radius: 10px;
-    border: solid black 1px;
     color: #1a202c;
     text-align:center;
     vertical-align: middle;
 }
 
 .runResultButtonSuccess {
-    background-color: #00B42C20
+    background-color: #00B42C0F;
+    border: solid #777777B3 1px;
 }
 
 .runResultButtonSuccessPicked, .runResultButtonSuccess:hover {
     background-color: rgba(7, 206, 58, 0.7);
+    border: solid black 1px;
 }
 
 .runResultButtonBlocked {
-    background-color: #CBCBCBD3;
+    background-color: #CBCBCB59;
+    border: solid #777777B3 1px;
 }
 
 .runResultButtonBlocked:hover, .runResultButtonBlockedPicked {
     color: #cbd5e0;
     background-color: rgba(110, 106, 106, 0.99);
+    border: solid black 1px;
 }
 
 .runResultButtonNegative {
-    background-color: rgba(255, 215, 215, 0.85);
+    background-color: #FF8D8D17;
+    border: solid #777777B3 1px;
 }
 
 .runResultButtonNegative:hover, .runResultButtonNegativePicked {
     background-color: #ff7a7a;
+    border: solid black 1px;
 }
 
 .runResultButtonSkipped {
-    background-color: rgba(255, 255, 217, 0.89);
+    background-color: #FFFF762C;
+    border: solid #777777B3 1px;
 }
 
 .runResultButtonSkipped:hover, .runResultButtonSkippedPicked {
     background-color: #ffff53;
+    border: solid black 1px;
+}
+
+.modalCaseRunResultsHistory {
+    width: 80%;
+}
+.caseRunResultIcon {
+    float: left;
+    height: 30px;
+    min-width: 25px;
+    width: 2%;
 }
 </style>

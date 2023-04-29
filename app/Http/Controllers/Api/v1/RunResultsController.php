@@ -131,7 +131,7 @@ class RunResultsController extends Controller
                         ->where('Run_id', $Run_id)
                         ->get();
         $counter = 0;
-        //передача статуса
+        //передача статуса кейса - результата последнего прогона
         foreach ($cases as $case) {
              $resultVersionsCount = RunCaseResultVersions::where('RunResult_id', $case['id'])->get()->count();
              if ($resultVersionsCount > 0) { //если был прогон - записываем последний результат
@@ -142,8 +142,8 @@ class RunResultsController extends Controller
                  $cases[$counter] = Arr::add($cases[$counter], 'RunStatus_id' , $ActualRunStatusAndName->RunStatus_id);
                  $cases[$counter] = Arr::add($cases[$counter], 'RunStatus_Name' , $ActualRunStatusAndName->RunStatus_Name);
              } else { //Записываем null в результат прогона
-                 $cases[$counter] = Arr::add($cases[$counter], 'RunStatus_id' , null);
-                 $cases[$counter] = Arr::add($cases[$counter], 'RunStatus_Name' , null);
+                 $cases[$counter] = Arr::add($cases[$counter], 'RunStatus_id' , 5);
+                 $cases[$counter] = Arr::add($cases[$counter], 'RunStatus_Name' , "Не тестировалось");
              }
             $counter = $counter + 1;
         }
@@ -160,13 +160,19 @@ class RunResultsController extends Controller
     public function edit(Request $request) {
         $RunResult_id = $request->input('RunResult_id');
         if ($RunResult_id) {
-            $runResult = RunResults::join('tasks', 'tasks.Task_id', '=', 'run_results.Task_id')
+            $TaskInRun = RunResults::join('tasks', 'tasks.Task_id', '=', 'run_results.Task_id')
                 ->select('run_results.*', 'tasks.*')
                 ->where('run_results.id', $RunResult_id)
                 ->first();
+            $RunResult = RunCaseResultVersions::where('RunResult_id', $RunResult_id)
+                ->leftJoin('users', 'users.id', '=', 'run_case_result_versions.User_id')
+                ->select('users.email', 'run_case_result_versions.*')
+                ->orderBy('id', 'DESC')->first();
+
             return Inertia::render('Runs/EditRunResult', [
-                'title' => "Прогон кейса '".$runResult->Task_Name."'",
-                'run' => $runResult
+                'title' => "Прогон кейса '".$TaskInRun->Task_Name."'",
+                'run' => $TaskInRun,
+                'lastResult' => $RunResult
             ]);
         } else {
             return redirect()->route('home');
@@ -179,5 +185,16 @@ class RunResultsController extends Controller
      */
     public function makeRun(Request $request) {
         return (new RunCaseResultVersionsController)->create($request);
+    }
+
+    /**
+     * Метод для маршрута - запись прогона и открытие рана.
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function store(Request $request) {
+        $result = $this->makeRun($request);
+        $runId = $request->input("Run_id");
+        return redirect()->route('runs.edit', ['Run_id' => $runId])->withErrors($result);
     }
 }

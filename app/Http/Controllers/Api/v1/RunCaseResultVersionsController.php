@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
 use App\Models\RunCaseResultVersions;
+use App\Models\RunResults;
 use Illuminate\Http\Request;
 
 class RunCaseResultVersionsController extends Controller
@@ -57,4 +58,27 @@ class RunCaseResultVersionsController extends Controller
         }
         return $result;
     }
+
+    /**
+     * Получение результатов всех прогонов по id тест-кейса.
+     *
+     * @param Request $request
+     * @return array
+     */
+    public function getResultsByCaseId(Request $request) {
+        $caseId = $request->input("Task_id");
+        if ($caseId) {
+            return RunResults::leftJoin('run_case_result_versions', 'run_case_result_versions.RunResult_id', '=', 'run_results.id')
+                ->leftJoin('users', 'users.id', '=', 'run_case_result_versions.User_id')
+                ->where('run_results.Task_id', $caseId)
+                ->select('run_case_result_versions.*', 'users.email')
+                ->get();
+        } else {
+            return [
+                "status" => false,
+                "error_msg" => 'Не переданы необходимые параметры'
+            ];
+        }
+    }
+
 }

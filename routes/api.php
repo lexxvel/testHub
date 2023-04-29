@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\v1\RunCaseResultVersionsController;
 use App\Http\Controllers\Api\v1\RunResultsController;
 use App\Http\Controllers\Api\v1\TasksController;
 use Illuminate\Http\Request;
@@ -42,6 +43,8 @@ Route::post('runResults/makeRun', [RunResultsController::class, 'makeRun']);
 
 Route::post('run/changeStatus', [RunsController::class, 'changeRunStatus']);
 Route::post('runs/byProject', [RunsController::class, 'getRunsByProject']);
+
+Route::post('results/getResultsListByCase', [RunCaseResultVersionsController::class, 'getResultsByCaseId']);
 
 Route::group(['middleware' => ['web']], function () {
     Route::post('projects/setPreferred', [ProjectController::class, 'setPrefProject']);

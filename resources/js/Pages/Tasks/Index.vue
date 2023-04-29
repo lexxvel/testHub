@@ -78,6 +78,7 @@ import CaseLine from "../../Shared/CaseLine";
 import TreeItem from "../../Shared/TreeItem";
 
 export default {
+   name: "CasesGridForm",
    props: {
        title: String,
        tasks: Array,

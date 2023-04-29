@@ -10,10 +10,17 @@ const store = createStore({
         preferProject: VueCookieNext.getCookie('prefProject'), // localStorage.getItem('prefProject') || '',
         preferProjectId: VueCookieNext.getCookie('prefProjectId'), //localStorage.getItem('prefProjectId') || '',
         priorityImagesLinks: [
-            {'id': 0, 'link': '/lowPriority.svg'},
-            {'id': 1, 'link': '/mediumPriority.svg'},
-            {'id': 2, 'link': '/highPriority.svg'} ,
-            {'id': 3, 'link': '/blockerPriority.svg'}
+            {'id': 0, 'link': '../img/priorities/lowPriority.svg'},
+            {'id': 1, 'link': '../img/priorities/mediumPriority.svg'},
+            {'id': 2, 'link': '../img/priorities/highPriority.svg'} ,
+            {'id': 3, 'link': '../img/priorities/blockerPriority.svg'}
+        ],
+        runResultsLinks: [
+            {'id': 1, 'name': 'Положительный', 'link': '../img/results/icons8-ок.svg'},
+            {'id': 2, 'name': 'Пропущен', 'link': '../img/results/skipped.svg'},
+            {'id': 3, 'name': 'Блокируется', 'link': '../img/results/icons8-знак-минус-96.svg'},
+            {'id': 4, 'name': 'Отрицательный', 'link': '../img/results/icons8-отмена.svg'},
+            {'id': 5, 'name': 'Не тестировалось', 'link': '../img/results/noResult.svg'},
         ],
         jiraProjects: [
             {'id': 0, 'project' : 'PROMEDWEB'},
@@ -77,6 +84,7 @@ const store = createStore({
         prefProjectName(state) { return state.preferProject },
         taskStages(state) { return state.taskStages },
         priorityImagesLinks(state) { return state.priorityImagesLinks },
+        runResultsLinks(state) { return state.runResultsLinks },
         jiraProjects(state) { return state.jiraProjects },
         taskPriorities(state) { return state.taskPriorities },
         caseStatuses(state) { return state.caseStatus },
