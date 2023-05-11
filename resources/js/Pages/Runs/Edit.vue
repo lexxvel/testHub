@@ -26,17 +26,23 @@
             </div>
 
             <div id="treeAndCases" style="display: block; width: 100%; float: left">
-                <div class="runFormTree">
+                <div style="width: 30%; height: auto;     float: left;    margin: 0 0 0 0;">
+                    <div class="runFormTree">
 
-                    <tree-item
-                        class="item"
-                        :item="treeData"
-                        :selected="selected"
-                        :viewOnly="false"
-                        @select-item="selectItem"
-                        @item-is-selected="itemIsSelected"
-                    ></tree-item>
+                        <tree-item
+                            class="item"
+                            :item="treeData"
+                            :selected="selected"
+                            :viewOnly="false"
+                            @select-item="selectItem"
+                            @item-is-selected="itemIsSelected"
+                        ></tree-item>
 
+
+                    </div>
+                    <div style="width: 100%; display: block; float:left">
+                        <Donut :data="this.statistic.data" :labels="this.statistic.labels" />
+                    </div>
                 </div>
 
                 <div id="modalAddCases" uk-modal>
@@ -50,7 +56,7 @@
 
                         <div class="uk-modal-body" uk-overflow-auto>
 
-
+                            <div style="width: 30%; height: auto;     float: left;    margin: 0 0 0 0;">
                             <div class="runFormTree">
 
                                 <tree-item
@@ -66,6 +72,7 @@
 
                             </div>
 
+                            </div>
                             <div class="ModalRunFormCases">
                                 <div style="display: grid;">
                                     <div class="grid" style="width: 100%;">
@@ -112,7 +119,6 @@
                     </div>
                 </div>
 
-
                 <div class="runFormCases">
 
 
@@ -154,11 +160,12 @@ import axios from "axios";
 import CaseLine from "../../Shared/CaseLine";
 import CaseLineForRun from "../../Shared/CaseLineForRun";
 import {forEach} from "lodash";
+import Donut from "../../Shared/Donut";
 
 export default {
     name: "RunPage",
     components : {
-        TreeItem, Head, Spin, Link, CaseLine, CaseLineForRun
+        TreeItem, Head, Spin, Link, CaseLine, CaseLineForRun, Donut
     },
     props: {
         title: String,
@@ -186,6 +193,10 @@ export default {
         modalCases: [],
         selectedCasesToAddInRun: [],
         selectedCasesInRun: [],
+        statistic: {
+            labels: ['Положительный', 'Пропущен', 'Блокируется', 'Отрицательный', 'Не тестировалось'],
+            data: [],
+        },
     }),
     computed : {
         ...mapGetters ([
@@ -215,6 +226,7 @@ export default {
                     this.selectedCasesToAddInRun.push(value.Task_id)
                 })
             });
+            this.getStatistic();
         },
 
         //работа с деревом
@@ -327,6 +339,19 @@ export default {
                 'Run_id': this.run.Run_id
             });
             this.loadCasesInRun();
+            this.loading = false;
+        },
+        getStatistic(){
+            this.loading = true;
+            axios.post('/api/runs/getRunStatistic', {
+                'Run_id': this.run.Run_id
+            }).then(res => {
+                    this.statistic.data = [];
+                res.data.forEach(el => {
+                    this.statistic.data.push(el.count)
+                })
+                console.log(res.data)
+            })
             this.loading = false;
         }
 

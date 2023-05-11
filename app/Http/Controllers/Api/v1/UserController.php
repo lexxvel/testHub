@@ -5,6 +5,7 @@ namespace App\Http\Controllers\api\v1;
 use App\Models\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Crypt;
 
@@ -42,12 +43,42 @@ class UserController extends Controller
         ]);
     }
 
+    public function createUser(Request $request) {
+        $request->validate([
+            'email' => 'required|max:255',
+            'password' => 'required|max:255',
+        ]);
+        $email = $request->input("email");
+        $role = $request->input("User_Role");
+
+        Crypt::encryptString($request->input("password"));
+
+        $userPassword = $request->input("password");
+
+        $isExist = (new User)->isUserExists($email);
+        //$isExist = User::where('email', 'like', $email)->get()->count();
+
+        if ($isExist) {
+            return [
+                "status" => "false",
+                "msg" => "Пользователь не создан, имя использовано ранее"
+            ];
+        } else if (!$isExist) {
+            return (new User)->createUser($email, bcrypt($userPassword), $role);
+        } else {
+            return [
+                "status" => "false",
+                "msg" => "Пользователь не создан. Произошла ошибка"
+            ];
+        }
+    }
+
     /**
      *  Создание пользователя
      *  @return Inertia object
      */
     public function store(Request $request) {
-        $result = $this->addUser($request);
+        $result = $this->createUser($request);
         return redirect()->route('users')->withErrors($result);
     }
 
@@ -148,6 +179,7 @@ class UserController extends Controller
     public function updateUser(Request $request) {
         $UserName = $request->input("email");
         $UserRole = $request->input("User_Role");
+        $password = $request->input("password");
         $UserId = $request->input("id");
         $isExist = User::where('email', 'like', $UserName)->where('id', 'not', $UserId)->get()->count();
         if ($isExist > 0) {
@@ -157,10 +189,12 @@ class UserController extends Controller
             ];
         } else {
             $request->validate([
-                'email' => 'required|max:255'
+                'email' => 'required|max:255',
+                'password' => 'required|max:255'
             ]);
             $result = User::where('id', $UserId)->update([
                 'email' => $UserName,
+                'password' => bcrypt($password),
                 'User_Role' => $UserRole,
             ]);
             if ($result === 1 || $result === true) {

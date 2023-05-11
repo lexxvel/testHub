@@ -48,6 +48,7 @@ export default {
         item: Object,
         selected: null,
         parent: Object,
+        project: Number || null,
         viewOnly: Boolean || null
     },
     data: function() {

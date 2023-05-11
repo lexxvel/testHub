@@ -267,7 +267,7 @@ body {
     margin: 0 0 0 0;
 }
 .runFormTree {
-    width: 30%;
+    width: 100%;
     min-height: 300px;
     height: auto;
     float: left;

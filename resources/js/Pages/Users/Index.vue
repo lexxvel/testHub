@@ -26,9 +26,6 @@
                         <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
                             Роль
                         </th>
-                        <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
-                            Команда
-                        </th>
                         </tr>
                     </thead>
                     <tbody v-if="users.total > 0">
@@ -38,9 +35,6 @@
                         </td>
                         <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
                             {{findArrayElementById(userRoles, user.User_Role, 'role')}}
-                        </td>
-                        <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                            Команда
                         </td>
                         <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap flex justify-end items-center">
                             <Link :href="route('users.edit', {'id': user.id})" class="text-indigo-600 hover:text-indigo-900" style="margin-right: 10px">Изменить</Link>

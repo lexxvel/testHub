@@ -13,10 +13,10 @@
     <div class="block p-6 rounded-lg shadow-lg bg-white max-w-md">
         <form @submit.prevent="store">
             <div class="form-group mb-6">
-            <input 
+            <input
                 v-model="form.email"
                 :class="{'border-red-500': form.errors.email}"
-                type="text" 
+                type="text"
                 class="form-control block
                 w-full
                 px-3
@@ -32,12 +32,12 @@
                 m-0
                 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none" id="exampleInput125"
                 placeholder="Имя пользователя">
-            
+
             <div v-if="form.errors.email" class="text-red-500 mt-2"> {{form.errors.email}}</div>
             </div>
-            
+
             <div class="form-group mb-6">
-            <input 
+            <input
                 v-model="form.password"
                 :class="{'border-red-500': form.errors.password}"
                 type="password" class="form-control block
@@ -55,33 +55,36 @@
                 m-0
                 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none" id="exampleInput126"
                 placeholder="Пароль">
-            
+
             <div v-if="form.errors.password" class="text-red-500 mt-2"> {{form.errors.password}}</div>
             </div>
 
             <div class="form-group form-check text-center mb-6">
-            <input 
-                v-model="form.User_Role"
-                :class="{'border-red-500': form.errors.User_Role}"
-                type="text" class="form-control block
-                w-full
-                px-3
-                py-1.5
-                text-base
-                font-normal
-                text-gray-700
-                bg-white bg-clip-padding
-                border border-solid border-gray-300
-                rounded
-                transition
-                ease-in-out
-                m-0
-                focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none" id="exampleInput126"
-                placeholder="Роль">
+                <select
+                    v-model="form.User_Role"
+                    :class="{'border-red-500': form.errors.User_Role}"
+                    class="form-select appearance-none
+                                block
+                                w-full
+                                px-3
+                                py-1.5
+                                text-base
+                                font-normal
+                                text-gray-700
+                                bg-white bg-clip-padding bg-no-repeat
+                                border border-solid border-gray-300
+                                rounded
+                                transition
+                                ease-in-out
+                                m-0
+                                focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none" aria-label="">
+                    <option disabled>Выберите роль</option>
+                    <option v-for="role in userRoles" :value="role.id">{{role.role}}</option>
+                </select>
             <div v-if="form.errors.User_Role" class="text-red-500 mt-2"> {{form.errors.User_Role}}</div>
             </div>
             <div class="form-group form-check text-center mb-6">
-            
+
             </div>
             <button type="submit" class="
             w-full
@@ -109,9 +112,10 @@
 
 <script>
 import {Head, Link, useForm} from '@inertiajs/inertia-vue3'
+import {mapGetters} from "vuex";
 export default {
     components: {
-        Link, Head, 
+        Link, Head,
     },
     props: {
         title: String
@@ -128,8 +132,12 @@ export default {
         }
 
         return {form, store};
-
-    }
+    },
+    computed : {
+        ...mapGetters ([
+            'userRoles',
+        ])
+    },
 }
 </script>
 
@@ -142,5 +150,5 @@ export default {
     left: 50%;
     margin: -125px 0 0 -125px;
   }
-    
+
 </style>

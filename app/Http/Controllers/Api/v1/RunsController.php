@@ -128,7 +128,7 @@ class RunsController extends Controller
     }
 
     /**
-     * Редактировование задачи (рендер страницы редактирования задачи)
+     * Редактировование тест-рана (рендер страницы редактирования рана)
      */
     public function edit(Request $request) {
         $runId = $request->input("Run_id");
@@ -143,6 +143,11 @@ class RunsController extends Controller
             'run' => $run,
             'user' => $value
         ]);
+    }
+
+    public function getRunStatistic(Request $request) {
+        $runId = $request->input("Run_id");
+        return (new Runs)->getRunStatistic($runId);
     }
 
 

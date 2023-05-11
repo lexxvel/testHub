@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Js;
 use Inertia\Inertia;
 use Psy\Util\Json;
+use Ramsey\Uuid\Type\Integer;
 
 class ProjectController extends Controller
 {
@@ -201,5 +202,11 @@ class ProjectController extends Controller
     {
         $Project_id = $request->input("Project_id");
         return Project::where('Project_id', $Project_id)->first()->Project_CasesTree;
+    }
+
+    public function updateTree(Request $request) {
+        $Project_id = (int) $request->input("Project_id");
+        $tree = $request->input("tree");
+        return (new Project)->updateTree($Project_id, $tree);
     }
 }

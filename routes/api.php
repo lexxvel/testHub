@@ -28,12 +28,14 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::get('users', [UserController::class, 'getUsers']);
 Route::post('user/delete', [UserController::class, 'deleteUser']);
 Route::post('user/add', [UserController::class, 'addUser']);
+Route::post('user/AddOne', [UserController::class, 'createUser']);
 
 Route::get('projects', [ProjectController::class, 'getProjects']);
 Route::post('case/getCasesByProject', [TasksController::class, 'getCasesByProject']);
 Route::post('project/add', [ProjectController::class, 'addProject']);
 Route::post('project/delete', [ProjectController::class, 'deleteProject']);
 Route::post('project/getProjectTree', [ProjectController::class, 'getProjectTree']);
+Route::post('project/updateTree', [ProjectController::class, 'updateTree']);
 Route::post('case/changeActualVersion', [TasksController::class, 'changeActualVersion']);
 Route::post('caseVersion/getActualSteps', [CaseVersionsController::class, 'getStepsByTask']);
 Route::post('caseVersion/getVersionsByTask', [CaseVersionsController::class, 'getVersionsByTask']);
@@ -43,6 +45,7 @@ Route::post('runResults/makeRun', [RunResultsController::class, 'makeRun']);
 
 Route::post('run/changeStatus', [RunsController::class, 'changeRunStatus']);
 Route::post('runs/byProject', [RunsController::class, 'getRunsByProject']);
+Route::post('runs/getRunStatistic', [RunsController::class, 'getRunStatistic']);
 
 Route::post('results/getResultsListByCase', [RunCaseResultVersionsController::class, 'getResultsByCaseId']);
 
