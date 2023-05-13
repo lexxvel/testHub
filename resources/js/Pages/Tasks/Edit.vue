@@ -1,9 +1,10 @@
 <template>
 
 
-    <Head :title="title" />
+    <Head :title='"Редактирование кейса"' />
     <div class="FormTitle">
-        <h2>{{title}}</h2>
+        <h2 v-if="task.Task_Task_isForRegress == 1" >Редактирование кейса к задаче {{findArrayElementById(jiraProjects, task.Task_Project, 'project')}}-{{task.Task_Number}}"</h2>
+        <h2 v-if="task.Task_Task_isForRegress !== 1">Редактирование кейса "{{ task.Task_Name}}"</h2>
         <Link :href="route('tasks', {Project_id: prefProject})" class="text-blue-600 hover:text-blue-900 my-5 block">
             Вернуться назад
         </Link>
@@ -14,7 +15,7 @@
         <div class="block p-6 ">
             <form >
                 <div class="formCaseTitle">
-                    <div v-if="task.Task_isForRegress !== 2" class="formCaseTitleProject">
+                    <div v-if="task.Task_isForRegress !== 1" class="formCaseTitleProject">
                         <div class="flex">
                             <div class="mb-3 xl:w-96">
                                 <select
@@ -41,7 +42,7 @@
                         </div>
                     </div>
 
-                    <div v-if="task.Task_isForRegress !== 2" class="formCaseTitleNumber">
+                    <div v-if="task.Task_isForRegress !== 1" class="formCaseTitleNumber">
                         <div class="flex">
                             <div class="mb-3 xl:w-96">
                                 <input
@@ -302,7 +303,6 @@ export default {
     },
     name: "EditCaseForm",
     props: {
-        title: String,
         task: Object
     },
     computed : {
@@ -412,7 +412,7 @@ export default {
                         ++stepCounter;
                     })*/
                     this.loading = false;
-                    this.buttonSaveEnabled = true;
+                    //this.buttonSaveEnabled = true;
                 })
         },
         deleteStep(id) {

@@ -174,9 +174,10 @@ export default {
                 'Project_id': this.prefProject,
                 'tree': JSON.stringify(this.treeDataFromDb)
             }).then(res => {
-                this.treeDataFromDb = res.data
-                this.treeDataFromDb = JSON.parse(this.treeDataFromDb.tree.Project_CasesTree);
-
+                if (res.data.tree) {
+                    this.treeDataFromDb = res.data
+                    this.treeDataFromDb = JSON.parse(this.treeDataFromDb.tree.Project_CasesTree);
+                }
                 this.loading = false;
             })
         },

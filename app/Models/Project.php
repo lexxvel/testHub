@@ -4,11 +4,39 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 
 class Project extends Model
 {
     use HasFactory;
+
+    /**
+     * Получение информации о проекте
+     * @param $Project_id integer идентификатор проекта
+     * @return array
+     */
+    public function getProject(int $Project_id) : array
+    {
+        $project = (array)DB::table('projects')
+            ->where('Project_id', $Project_id)
+            ->first();
+
+        if ($project == []) {
+            return [
+                "success" => false,
+                "msg" => "Проект не найден"
+            ];
+        } else {
+            Arr::add($project, 'users', []);
+
+            $users = DB::table('project_accesses')
+                ->join('users', 'users.id', '=', 'project_accesses.User_id')
+                ->where('project_accesses.Project_id', $Project_id)->get();
+            Arr::set($project, 'users', $users);
+            return $project;
+        }
+    }
 
     /**
      * Обновление дерева проекта.

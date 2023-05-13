@@ -71,7 +71,6 @@ class TasksController extends Controller
         $taskId = $request->input("Task_id");
         $task = Tasks::where('Task_id', $taskId)->first();
         return Inertia::render('Tasks/Edit', [
-            'title' => "Редактирование кейса к задаче " . $task->Task_JiraProject . "-" . $task->Task_Number,
             'task' => $task
         ]);
     }
@@ -83,6 +82,7 @@ class TasksController extends Controller
     public function update(Request $request) {
         $goBackProject = $request->input('Task_Project');
         $result = $this->updateTask($request);
+        dd($result);
         return redirect()->route('tasks', ['Project_id' => $goBackProject])->withErrors($result);
     }
 

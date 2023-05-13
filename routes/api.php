@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\v1\ProjectAccessController;
 use App\Http\Controllers\Api\v1\RunCaseResultVersionsController;
 use App\Http\Controllers\Api\v1\RunResultsController;
 use App\Http\Controllers\Api\v1\TasksController;
@@ -30,12 +31,18 @@ Route::post('user/delete', [UserController::class, 'deleteUser']);
 Route::post('user/add', [UserController::class, 'addUser']);
 Route::post('user/AddOne', [UserController::class, 'createUser']);
 
-Route::get('projects', [ProjectController::class, 'getProjects']);
+Route::post('projects', [ProjectController::class, 'getProjects']);
 Route::post('case/getCasesByProject', [TasksController::class, 'getCasesByProject']);
 Route::post('project/add', [ProjectController::class, 'addProject']);
 Route::post('project/delete', [ProjectController::class, 'deleteProject']);
 Route::post('project/getProjectTree', [ProjectController::class, 'getProjectTree']);
 Route::post('project/updateTree', [ProjectController::class, 'updateTree']);
+Route::post('project/getProject', [ProjectController::class, 'getProject']);
+Route::post('project/getProjectsByAccess', [ProjectController::class, 'getProjectsByAccess']);
+
+Route::post('projectAccess/add', [ProjectAccessController::class, 'addAccess']);
+Route::post('projectAccess/del', [ProjectAccessController::class, 'delAccess']);
+
 Route::post('case/changeActualVersion', [TasksController::class, 'changeActualVersion']);
 Route::post('caseVersion/getActualSteps', [CaseVersionsController::class, 'getStepsByTask']);
 Route::post('caseVersion/getVersionsByTask', [CaseVersionsController::class, 'getVersionsByTask']);

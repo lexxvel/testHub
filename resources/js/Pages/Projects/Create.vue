@@ -70,7 +70,7 @@
                 </div>
 
                 <div class="form-check">
-                    <input v-model="form.Project_isCommon"
+                    <input @click="selectedUsers = []" v-model="form.Project_isCommon"
                            class="form-check-input appearance-none h-4 w-4 border border-gray-300 rounded-sm bg-white checked:bg-blue-600 checked:border-blue-600 focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer"
                            type="checkbox" value="" id="flexCheckChecked" checked>
                     <label class="form-check-label inline-block text-gray-800" for="flexCheckChecked">
@@ -83,7 +83,7 @@
                 <div v-if="!form.Project_isCommon">
 
                     <div class="form-group mb-6">
-                        <label for="userForProject" class="form-label inline-block mb-2 text-gray-700">Роль</label>
+                        <label for="userForProject" class="form-label inline-block mb-2 text-gray-700">Выберите пользователя</label>
                         <select
                             id="userForProject"
                             v-model="selectedUser"
@@ -103,12 +103,15 @@
                                 ease-in-out
                                 m-0
                                 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none" aria-label="Роль">
-                            <option v-for="role in userRoles" :value="role.id">{{role.role}}</option>
+                            <option v-for="user in users" :value="user">{{user.email}}</option>
                         </select>
                         <div v-if="userAddError" class="text-red-500 mt-2"> {{userAddError}}</div>
                     </div>
 
-                    <button class="
+                    <button
+                        @click="addUser()"
+                        type="button"
+                        class="
                     w-1/8 px-6 py-2.5
                     bg-green-300  text-black  font-medium text-m
                     leading-tight  uppercase  rounded shadow-md hover:bg-green-700 hover:shadow-lg
@@ -119,10 +122,18 @@
                     </button>
                 </div>
 
-                <br>
+                <div v-for="user in selectedUsers">
+                    <p style="margin: 0 0 0 0">
+                        {{user.email}}
+                    </p>
+                </div>
+
                 <br>
 
-                <button type="submit" class="
+                <button
+                    @click="form.users = selectedUsers"
+                    type="submit"
+                    class="
                     w-full
                     px-6
                     py-2.5
@@ -150,7 +161,7 @@
 
 <script>
 import {Head, Link, useForm} from '@inertiajs/inertia-vue3'
-import axios from "../../../../public/js/app";
+import axios from "axios";
 
 export default {
     components: {
@@ -160,10 +171,12 @@ export default {
         title: String
     },
     data: () => ({
+        users: [],
         selectedUser: null,
+        selectedUsers: [],
         userAddError: null,
     }),
-    mounted() {
+    created() {
         this.getUsers();
     },
     setup() {
@@ -171,7 +184,7 @@ export default {
             Project_Name: null,
             Project_About: null,
             Project_isCommon: true,
-            users: [],
+            users: []
         });
 
         function store() {
@@ -183,12 +196,18 @@ export default {
     },
     methods: {
         getUsers: function () {
-          axios('api/users').then(res => {
-             console.log(res.data)
+          axios.get('/api/users').then(res => {
+             this.users = res.data
           });
         },
-        addUser: function (id) {
-            this.form.users.push({'id': id})
+        addUser: function () {
+            if (this.selectedUser) {
+                this.userAddError = null
+                this.selectedUsers.push(this.selectedUser)
+                this.selectedUser = null
+            } else {
+                this.userAddError = "Выберите пользователя чтобы добавить в проект"
+            }
         }
     },
 }
