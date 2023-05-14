@@ -137,7 +137,7 @@ class RunResultsController extends Controller
              if ($resultVersionsCount > 0) { //если был прогон - записываем последний результат
                  $ActualRunStatusAndName = RunCaseResultVersions::join('run_statuses', 'run_case_result_versions.RunStatus_id', '=', 'run_statuses.RunStatus_id')
                      ->select('run_case_result_versions.RunStatus_id', 'run_statuses.RunStatus_Name')
-                     ->where('RunResult_id', $case['id'])
+                     ->where('run_case_result_versions.RunResult_id', $case['id'])
                      ->orderBy('id', "DESC")->first();
                  $cases[$counter] = Arr::add($cases[$counter], 'RunStatus_id' , $ActualRunStatusAndName->RunStatus_id);
                  $cases[$counter] = Arr::add($cases[$counter], 'RunStatus_Name' , $ActualRunStatusAndName->RunStatus_Name);

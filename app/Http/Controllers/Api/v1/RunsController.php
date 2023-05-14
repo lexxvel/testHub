@@ -66,7 +66,13 @@ class RunsController extends Controller
         $Desc = $request->input("Run_Desc");
         $Status = $request->input("Run_Status");
         $EndDate = $request->input("Run_EndDate");
-        $date = Carbon::createFromFormat('d.m.Y', $EndDate)->format('Y/m/d');
+        if ($EndDate) {
+            $date = Carbon::createFromFormat('d.m.Y', $EndDate)->format('Y/m/d');
+        } else {
+            $date = null;
+        }
+
+        $newTree = '{"id":0,"name":"Тест-ран","id_counter":3,"root":true,"children":[{"id":1,"name":"Задачи"},{"id":2,"name":"Регрессионные кейсы"}]}';
 
         $result = Runs::insert([
             'Project_id' => $JiraProject,
@@ -75,6 +81,7 @@ class RunsController extends Controller
             'Run_Desc' => $Desc ? $Desc : null,
             'Run_Status' => $Status ? $Status : 0,
             'Run_EndDt' => $date ? $date : null,
+            'Run_Tree' => $newTree,
             'created_at' => now()
         ]);
 
@@ -137,11 +144,13 @@ class RunsController extends Controller
             ->first();
         //$value = $request->session()->get('_token');
         $value = $request->session()->get('user');
+        $tree = (new Runs)->getTree($runId);
         //dd($value['email']);
         return Inertia::render('Runs/Edit', [
             'title' => $run->Run_Name,
             'run' => $run,
-            'user' => $value
+            'user' => $value,
+            'tree' => $tree
         ]);
     }
 
@@ -150,6 +159,16 @@ class RunsController extends Controller
         return (new Runs)->getRunStatistic($runId);
     }
 
-
+    /**
+     * Обновление дерева рана
+     * @param Request $request должен содержать Run_id и tree
+     * @return array
+     */
+    public function updateTree(Request $request): array
+    {
+        $Run_id = (int) $request->input("Run_id");
+        $tree = $request->input("tree");
+        return (new Runs)->updateTree($Run_id, $tree);
+    }
 
 }

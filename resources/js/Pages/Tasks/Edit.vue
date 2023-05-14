@@ -20,6 +20,7 @@
                             <div class="mb-3 xl:w-96">
                                 <select
                                     v-model="form.Task_JiraProject"
+                                    :disabled="$attrs.user.User_Role === 0"
                                     class="form-select appearance-none
                                 block
                                 w-full
@@ -48,6 +49,7 @@
                                 <input
                                     v-model="form.Task_Number"
                                     @keypress="isNumber($event)"
+                                    :disabled="$attrs.user.User_Role === 0"
                                     :class="{'border-red-500': form.errors.Task_Number}"
                                     class="
                                 form-control
@@ -78,6 +80,7 @@
                         <div class="flex">
                             <div class="mb-3" style="width: 100%">
                                 <input
+                                    :disabled="$attrs.user.User_Role === 0"
                                     v-model="form.Task_Name"
                                     :class="{'border-red-500': form.errors.Task_Name}"
                                     type="text"
@@ -116,7 +119,7 @@
                                     </div>
                                     <div class="stepDelete">
                                         <div class="btnDeleteStep">
-                                            <a @click="deleteStep(step.Step_Number)">
+                                            <a v-if="$attrs.user.User_Role !== 0" @click="deleteStep(step.Step_Number)">
                                                 <img src="/trash.svg" alt="">
                                             </a>
                                         </div>
@@ -124,16 +127,18 @@
                                 </div>
 
                                 <div class="stepAction border-l border-r">
-                                    <QuillEditor v-model:content="step.Step_Action" theme="snow" v-bind:toolbar="minimalToolbar" v-bind:contentType="'html'" />
+                                    <QuillEditor v-if="$attrs.user.User_Role === 0" :read-only="true" v-model:content="step.Step_Action" theme="snow" v-bind:toolbar="minimalToolbar" v-bind:contentType="'html'" />
+                                    <QuillEditor v-if="$attrs.user.User_Role !== 0" v-model:content="step.Step_Action" theme="snow" v-bind:toolbar="minimalToolbar" v-bind:contentType="'html'" />
                                 </div>
 
                                 <div class="stepResult">
-                                    <QuillEditor v-model:content="step.Step_Result" theme="snow" v-bind:toolbar="minimalToolbar" v-bind:contentType="'html'" />
+                                    <QuillEditor v-if="$attrs.user.User_Role === 0" :read-only="true" v-model:content="step.Step_Result" theme="snow" v-bind:toolbar="minimalToolbar" v-bind:contentType="'html'" />
+                                    <QuillEditor v-if="$attrs.user.User_Role !== 0" v-model:content="step.Step_Result" theme="snow" v-bind:toolbar="minimalToolbar" v-bind:contentType="'html'" />
                                 </div>
                             </div>
                         </div>
                         <div class="btnAddStep">
-                            <a @click="addStep">
+                            <a v-if="$attrs.user.User_Role !== 0" @click="addStep">
                                 <img src="/plus.svg" alt="">
                             </a>
                         </div>
@@ -153,7 +158,7 @@
 
                             <a
                                 @click="this.setActualVersion()"
-                                v-if="task.Task_ActualVersion !== actualVer && verChanged !== 2"
+                                v-if="task.Task_ActualVersion !== actualVer && verChanged !== 2 && $attrs.user.User_Role !== 0"
                                 style=" width: 50%; "
                                 class="
                                     py-2.5 bg-red-300 text-white font-medium text-xs
@@ -174,6 +179,7 @@
                                     Приоритет
                                 </label>
                                 <select
+                                    :disabled="$attrs.user.User_Role === 0"
                                     v-model="form.Task_Priority"
                                     :class="{'border-red-500': form.errors.Task_Priority}"
                                     class="form-select appearance-none
@@ -205,6 +211,7 @@
                                     Статус кейса
                                 </label>
                                 <select
+                                    :disabled="$attrs.user.User_Role === 0"
                                     v-model="form.Task_Stage"
                                     :class="{'border-red-500': form.errors.Task_Stage, 'bg-red-100': form.Task_Stage == '0', 'bg-yellow-100': form.Task_Stage == '1', 'bg-green-100': form.Task_Stage == '2'}"
                                     class="form-select appearance-none
@@ -236,7 +243,7 @@
 
                 <div class="form-group form-check text-center mb-6 ">
                 </div>
-                <button v-if="buttonSave"
+                <button v-if="buttonSave && $attrs.user.User_Role !== 0"
                     @click="this.clickedSave()"
                     type="submit"
                     class="
@@ -259,7 +266,7 @@
             duration-150
             ease-in-out">Сохранить</button>
 
-            <button v-if="!buttonSave"
+            <button v-if="!buttonSave || $attrs.user.User_Role === 0"
                     disabled
                     type="submit"
                     class="

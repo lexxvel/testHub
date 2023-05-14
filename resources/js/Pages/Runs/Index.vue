@@ -6,27 +6,29 @@
     <spin v-if="loading"></spin>
     <div v-if="!loading" class="runsForm">
         <h3 v-if="this.runsList.length < 1">Опаньки... не найдено ни одного тест-рана</h3>
-        <Link :href="route('runs.create')" class="text-blue-600 hover:text-blue-900 my-5 block" style="width: 50px">
+        <Link v-if="$attrs.user.User_Role > 1" :href="route('runs.create')" class="text-blue-600 hover:text-blue-900 my-5 block" style="width: 50px">
             Добавить
         </Link>
 
         <div v-if="this.runsList.length > 0" class="runsGrid">
             <div v-for="run in runsList" :key="run.Run_id" class="runCard rounded-lg shadow-lg bg-white">
-                <Link :href="route('runs.edit', {Run_id: run.Run_id})" style="color: black">
                 <div class="runCardStatus">
                     <div class="uk-inline">
                         <a href="">статус: {{ findArrayElementById(testrunStatuses, run.Run_Status, 'status')}}</a>
                         <!-- https://tailwind-elements.com/docs/standard/components/popover/
                             или https://tailwind-elements.com/docs/standard/components/dropdown/ -->
-                        <div class="uk-card uk-card-body uk-card-default top-center	" uk-drop="mode: click; pos: top-left" style="padding: 5px 5px 5px 5px; min-width: 200px; width: auto">
+                        <div  class="uk-card uk-card-body uk-card-default top-center	" uk-drop="mode: click; pos: top-left" style="padding: 5px 5px 5px 5px; min-width: 200px; width: auto">
                             Выберите новый статус:
-                            <div v-for="status in testrunStatuses">
+                            <div v-if="$attrs.user.User_Role !== 0" v-for="status in testrunStatuses">
                                 <a @click="this.changeRunStatus(run.Run_id, status.id)">{{status.status}}</a> <br>
                             </div>
 
                         </div>
                     </div>
                 </div>
+
+                <Link :href="route('runs.edit', {Run_id: run.Run_id})" style="color: black">
+
                 <div class="runCardTitle">
                     <p class=" runCardTitleText cut-text transition duration-150 ease-in-out"
                        data-bs-toggle="tooltip" :title="run.Run_Name">{{run.Run_Name}}</p>

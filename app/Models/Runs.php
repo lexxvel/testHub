@@ -11,7 +11,13 @@ class Runs extends Model
 {
     use HasFactory;
 
-    public function getRunStatistic($Run_id) {
+    /**
+     * Получение статистики по рану
+     * @param $Run_id integer идентификатор рана
+     * @return array|array[]
+     */
+    public function getRunStatistic(int $Run_id): array
+    {
         if (!$Run_id) {
             return [
                 'status' => false,
@@ -33,11 +39,11 @@ class Runs extends Model
                     ->select('run_case_result_versions.RunStatus_id', 'run_statuses.RunStatus_Name')
                     ->where('RunResult_id', $case['id'])
                     ->orderBy('id', "DESC")->first();
-                $cases[$counter] = Arr::add($cases[$counter], 'RunStatus_id' , $ActualRunStatusAndName->RunStatus_id);
-                $cases[$counter] = Arr::add($cases[$counter], 'RunStatus_Name' , $ActualRunStatusAndName->RunStatus_Name);
+                $cases[$counter] = Arr::add($cases[$counter], 'RunStatus_id', $ActualRunStatusAndName->RunStatus_id);
+                $cases[$counter] = Arr::add($cases[$counter], 'RunStatus_Name', $ActualRunStatusAndName->RunStatus_Name);
             } else { //Записываем null в результат прогона
-                $cases[$counter] = Arr::add($cases[$counter], 'RunStatus_id' , 5);
-                $cases[$counter] = Arr::add($cases[$counter], 'RunStatus_Name' , "Не тестировалось");
+                $cases[$counter] = Arr::add($cases[$counter], 'RunStatus_id', 5);
+                $cases[$counter] = Arr::add($cases[$counter], 'RunStatus_Name', "Не тестировалось");
             }
             $counter = $counter + 1;
         }
@@ -48,7 +54,7 @@ class Runs extends Model
             ["RunStatus_id" => 3, "RunStatus_Name" => "Блокируется", "count" => 0],
             ["RunStatus_id" => 4, "RunStatus_Name" => "Отрицательный", "count" => 0],
             ["RunStatus_id" => 5, "RunStatus_Name" => "Не тестировалось", "count" => 0],
-            ];
+        ];
 
         foreach ($cases as $case) {
             switch ($case->RunStatus_id) {
@@ -77,6 +83,54 @@ class Runs extends Model
             }
         }
         return $result;
+    }
 
+    /**
+     * Обновление дерева рана.
+     * @param $Run_id int id рана
+     * @param $tree string дерево
+     * @return  array  ответ
+     */
+    public function updateTree(int $Run_id, string $tree): array
+    {
+        if ($Run_id && $tree) {
+            $res = DB::table('runs')->where('Run_id', $Run_id)
+                ->update([
+                    'Run_Tree' => $tree
+                ]);
+            if ($res == 1) {
+                $newTree = DB::table('runs')
+                    ->select('Run_Tree')
+                    ->where('Run_id', $Run_id)
+                    ->first();
+                return [
+                    "status" => true,
+                    "error_msg" => 'Дерево рана успешно обновлено',
+                    "tree" => $newTree
+                ];
+            } else {
+                return [
+                    "status" => false,
+                    "error_msg" => 'Ошибка при обновлении дерева проекта'
+                ];
+            }
+        } else {
+            return [
+                "status" => false,
+                "error_msg" => 'Не переданы обязательные параметры'
+            ];
+        }
+    }
+
+    public function getTree($Run_id)
+    {
+        if ($Run_id) {
+            return DB::table('runs')->where('Run_id', $Run_id)->first()->Run_Tree;
+        } else {
+            return [
+                "status" => false,
+                "error_msg" => 'Не передан обязательный параметр'
+            ];
+        }
     }
 }

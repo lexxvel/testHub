@@ -28,6 +28,7 @@
                 :parent="item"
                 :selected="selected"
                 :view-only="viewOnly"
+                :User_Role="User_Role"
                 @make-folder="$emit('make-folder', $event)"
                 @add-item="$emit('add-item', $event)"
                 @select-item="$emit('select-item', $event)"
@@ -61,7 +62,10 @@ export default {
     },
     computed: {
         isFolder: function() {
-            return this.item.children && this.item.children.length;
+            if (this.item.children && this.item.children.length > 0) {
+                return true;
+            }
+            return false;
         },
         isSelected: function () {
             return this.$props.selected === this.item.id

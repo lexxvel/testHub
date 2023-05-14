@@ -53,6 +53,7 @@ Route::post('runResults/makeRun', [RunResultsController::class, 'makeRun']);
 Route::post('run/changeStatus', [RunsController::class, 'changeRunStatus']);
 Route::post('runs/byProject', [RunsController::class, 'getRunsByProject']);
 Route::post('runs/getRunStatistic', [RunsController::class, 'getRunStatistic']);
+Route::post('runs/updateTree', [RunsController::class, 'updateTree']);
 
 Route::post('results/getResultsListByCase', [RunCaseResultVersionsController::class, 'getResultsByCaseId']);
 

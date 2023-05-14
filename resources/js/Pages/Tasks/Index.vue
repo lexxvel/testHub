@@ -147,7 +147,7 @@ export default {
             'priorityImagesLinks'
         ])
     },
-    сreated() {
+    created() {
 
     },
     methods: {

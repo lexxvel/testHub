@@ -3,6 +3,7 @@
 use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Schema;
 
 class CreateUsersTable extends Migration
@@ -28,7 +29,7 @@ class CreateUsersTable extends Migration
                 'email' => 'admin',
                 'password' => '$2y$10$bEn2D3dyaAOqRCE7RC1QzeY9GfkDVHxwJxN3.nTDqv98L5Q7favwa',
                 'User_Role' => 99,
-                'createdAt' => now()
+                'createdAt' => Carbon::now()
             ]);
 
         foreach ($data as $datum){

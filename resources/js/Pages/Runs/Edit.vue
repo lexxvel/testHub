@@ -34,8 +34,12 @@
                             :item="treeData"
                             :selected="selected"
                             :viewOnly="false"
+                            :User_Role="$props.user.User_Role"
                             @select-item="selectItem"
+                            @add-item="addItem"
+                            @make-folder="makeFolder"
                             @item-is-selected="itemIsSelected"
+                            @rename-folder="renameFolder"
                         ></tree-item>
 
 
@@ -66,8 +70,6 @@
                                     :viewOnly="true"
                                     @select-item="selectModalFolder"
                                     @item-is-selected="modalFolderIsSelected"
-                                    @rename-folder="renameFolder"
-                                    @delete-folder="deleteFolder"
                                 ></tree-item>
 
                             </div>
@@ -143,7 +145,7 @@
             </div>
         </div>
     </div>
-    <div v-if="selected !== 0" class="addCaseInRun">
+    <div v-if="selected !== 0 && $props.user.User_Role !== 0" class="addCaseInRun">
         <a href="#modalAddCases" uk-toggle>
             <img src="/plus.svg" alt="">
         </a>
@@ -171,6 +173,7 @@ export default {
         title: String,
         run: Object,
         user: Object,
+        tree: Object,
     },
     data: () => ({
         loading: false,
@@ -241,6 +244,7 @@ export default {
                 name: "Новая папка " + this.treeData.id_counter
             });
             ++this.treeData.id_counter;
+            this.saveTree();
         },
         selectItem: function (id) {
             this.selected = id;
@@ -258,6 +262,7 @@ export default {
         },
         renameFolder: function (o) {
             o.item.name = o.newName;
+            this.saveTree();
         },
         deleteFolder: function (o) {
             let arr = o.parent.children;
@@ -265,6 +270,7 @@ export default {
             //находим индекс удаляемого элемента в массиве children родительского объекта и удаляем
             let i = arr.findIndex(child => child.id === o.ident);
             arr.splice(i, true)
+            this.saveTree();
         },
 
         //работа с модалкой
@@ -353,10 +359,27 @@ export default {
                 console.log(res.data)
             })
             this.loading = false;
-        }
+        },
+        saveTree: function () {
+            axios.post('/api/runs/updateTree', {
+                'Run_id': this.run.Run_id,
+                'tree': JSON.stringify(this.treeData)
+            }).then(res => {
+                if (res.data.tree) {
+                    this.treeData = res.data
+                    this.treeData = JSON.parse(this.treeData.tree.Run_Tree);
+                }
+                this.loading = false;
+            })
+        },
 
     },
     mounted() {
+
+        //парсим строку дерева в JSON
+        this.treeData = this.tree;
+        this.treeData = JSON.parse(this.treeData);
+
         this.loadCasesInRun();
         this.getProjectTree();
         this.getCases();

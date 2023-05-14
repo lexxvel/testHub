@@ -127,7 +127,7 @@
                         <hr>
 
                         <div style="display: block; height: 100px; position: relative">
-                            <a @click="(lastResult && lastResult.RunStatus_id && !changeResult) ? null : setResult(1)">
+                            <a @click="((lastResult && lastResult.RunStatus_id && !changeResult) || $attrs.user.User_Role === 0 ) ? null : setResult(1)">
                                 <div class="runResultButton runResultButtonSuccess"
                                      :class="{runResultButtonSuccessPicked : form.RunStatus_id === 1}"
                                      >
@@ -135,20 +135,20 @@
                                 </div>
                             </a>
 
-                            <a @click="(lastResult && lastResult.RunStatus_id && !changeResult) ? null : setResult(3)">
+                            <a @click="((lastResult && lastResult.RunStatus_id && !changeResult) || $attrs.user.User_Role === 0 ) ? null : setResult(3)">
                                 <div class="runResultButton runResultButtonBlocked"
                                     :class="{runResultButtonBlockedPicked : form.RunStatus_id === 3}">
                                     Блокируется
                                 </div>
                             </a>
 
-                            <a @click="(lastResult && lastResult.RunStatus_id && !changeResult) ? null : setResult(4)">
+                            <a @click="((lastResult && lastResult.RunStatus_id && !changeResult) || $attrs.user.User_Role === 0 ) ? null : setResult(4)">
                                 <div class="runResultButton runResultButtonNegative"
                                     :class="{runResultButtonNegativePicked : form.RunStatus_id === 4 }">
                                     Отрицательный
                                 </div>
                             </a>
-                            <a @click="(lastResult && lastResult.RunStatus_id && !changeResult) ? null : setResult(2)">
+                            <a @click="((lastResult && lastResult.RunStatus_id && !changeResult) || $attrs.user.User_Role === 0 ) ? null : setResult(2)">
                                 <div class="runResultButton runResultButtonSkipped"
                                      :class="{runResultButtonSkippedPicked : form.RunStatus_id === 2 }">
                                    Пропущено
@@ -161,7 +161,8 @@
                             <p style="float: left; margin: 0 0 0 0;">Дата прогона: {{ formatDateToRussian(lastResult.created_at) }}</p>
                             <p style="float: left; margin: 0 0 0 0;">Прогонял: {{ lastResult.email }}</p>
 
-                            <button v-if="form.RunStatus_id && lastResult && !resultChanged"
+                            <button v-if="(form.RunStatus_id && lastResult && !resultChanged) || $attrs.user.User_Role === 0 "
+                                    :disabled="$attrs.user.User_Role === 0"
                                     @click="changeResultFunc()"
                                     style="width: 75%; top:50%; left:50%; float: left"
                                     class="mb-3 xl:w-96 px-6 xl:w-96 py-2.5 text-black font-medium text-xs leading-tight
@@ -185,7 +186,7 @@
                                 </label>
                                 <textarea
                                     v-model="form.RunResult_Comment"
-                                    :disabled="lastResult && lastResult.RunResult_TimeSpent && !changeResult"
+                                    :disabled="(lastResult && lastResult.RunResult_TimeSpent && !changeResult) || $attrs.user.User_Role === 0 "
                                     class="
                                         form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700
                                         bg-white bg-clip-padding border border-solid border-gray-300 rounded
@@ -213,7 +214,7 @@
                                             border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700
                                             focus:bg-white focus:border-blue-600 focus:outline-none"
                                         id="hoursSpentInput"
-                                        :disabled="lastResult && lastResult.RunResult_TimeSpent && !changeResult"
+                                        :disabled="(lastResult && lastResult.RunResult_TimeSpent && !changeResult) || $attrs.user.User_Role === 0"
                                         placeholder="часов"
                                     />
                                     <p style="margin: 10px 0 0 0; width: 10px; float: left"> ч.</p>
@@ -223,7 +224,7 @@
                                         v-model="minutesSpent"
                                         style="float: left"
                                         @keypress="isNumber($event)"
-                                        :disabled="lastResult && lastResult.RunResult_TimeSpent && !changeResult"
+                                        :disabled="(lastResult && lastResult.RunResult_TimeSpent && !changeResult) || $attrs.user.User_Role === 0"
                                         :class="{'border-red-500': form.errors.Task_Number}"
                                         class="form-control block w-8/12 px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding
                                             border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700
@@ -283,7 +284,7 @@
 
                 <div class="form-group form-check text-center mb-6 ">
                 </div>
-                <button v-if="(form.RunStatus_id && !lastResult) || (lastResult && changeResult && form.RunStatus_id)"
+                <button v-if="((form.RunStatus_id && !lastResult) || (lastResult && changeResult && form.RunStatus_id)) && $attrs.user.User_Role !== 0"
                         @click="this.clickedSave()"
                         type="submit"
                         class=" w-full px-6 xl:w-96 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight
@@ -291,7 +292,7 @@
                         focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
                 >Сохранить</button>
 
-                <button v-if="!form.RunStatus_id || (lastResult && !changeResult)"
+                <button v-if="!form.RunStatus_id || (lastResult && !changeResult) || $attrs.user.User_Role === 0"
                         disabled
                         @click="null"
                         type="submit"

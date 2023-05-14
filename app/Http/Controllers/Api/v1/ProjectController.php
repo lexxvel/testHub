@@ -147,14 +147,7 @@ class ProjectController extends Controller
                 "msg" => "Проект не создан, название использовано ранее"
             ];
         } else {
-            $defaultTree = '
-            {"id": 0,"name": "Проект","id_counter": 4,"root": true, "children":
-                [
-                    { "id": 1, "name": "Текучка", "root": true },
-                    { "id": 2, "name": "Архив", "root": true },
-                    { "id": 3, "name": "Регресс", "root": true }
-                ]
-            }';
+            $defaultTree = '{"id": 0,"name": "Проект","id_counter": 4,"root": true, "children":[{ "id": 1, "name": "Текучка", "root": true },{ "id": 2, "name": "Архив", "root": true },{ "id": 3, "name": "Регресс", "root": true }]}';
             $result = Project::insert([
                 'Project_Name' => $projectName,
                 'Project_About' => $projectAbout,

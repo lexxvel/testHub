@@ -46,7 +46,7 @@ class Project extends Model
      */
     public function updateTree (int $Project_id, string $tree) : array
     {
-        if ($Project_id || $tree) {
+        if ($Project_id && $tree) {
             $res = DB::table('projects')->where('Project_id', $Project_id)
                 ->update([
                 'Project_CasesTree' => $tree
@@ -70,7 +70,7 @@ class Project extends Model
         } else {
             return [
               "status" => false,
-              "error_msg" => 'Не передан обязательный параметр'
+              "error_msg" => 'Не переданы обязательные параметры'
             ];
         }
     }

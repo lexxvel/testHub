@@ -19,6 +19,7 @@ class CreateRunsTable extends Migration
             $table->string("Run_Name");
             $table->integer("Run_Type");
             $table->integer("Run_Status");
+            $table->text("Run_Tree");
             $table->string("Run_Desc")->nullable();
             $table->date("Run_EndDt")->nullable();
             $table->timestamps();
