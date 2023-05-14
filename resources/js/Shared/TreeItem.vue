@@ -12,8 +12,8 @@
                     <a> {{item.name}} </a>
                 </p>
 
-                <a @click="makeFolder(item)" v-if="!isFolder && !viewOnly" style="float: left; padding-left: 5px; opacity: .4; height: 80%; width: 17px;"><img style="padding-top:5px; padding-bottom:5px;"  src="/img/tree/folderAddSmall.png"></a>
-                <a @click="deleteFolder(parent, item.id)" v-if="!isFolder && !item.root && !viewOnly" style="float: left; padding-left: 4px; opacity: .4; height: 80%; width: 17px;"><img  style="padding-top:7px; padding-bottom:5px;" src="/img/tree/мусорка.svg"></a>
+                <a @click="makeFolder(item)" v-if="!isFolder && !viewOnly && User_Role > 0" style="float: left; padding-left: 5px; opacity: .4; height: 80%; width: 17px;"><img style="padding-top:5px; padding-bottom:5px;"  src="/img/tree/folderAddSmall.png"></a>
+                <a @click="deleteFolder(parent, item.id)" v-if="!isFolder && !item.root && !viewOnly && User_Role > 0" style="float: left; padding-left: 4px; opacity: .4; height: 80%; width: 17px;"><img  style="padding-top:7px; padding-bottom:5px;" src="/img/tree/мусорка.svg"></a>
             </div>
             <input v-if="editFolder" style="height: 23px; width: 160px" type="text" v-model="newName" ><a @click="renameFolder" v-if="editFolder" style="float: left">🆗</a>
 
@@ -35,7 +35,7 @@
                 @rename-folder="$emit('rename-folder', $event)"
                 @delete-folder="$emit('delete-folder', $event)"
             ></tree-item>
-            <li v-if="!viewOnly" style="height: 18px; width: 18px" class="add" @click="$emit('add-item', item)"><a ><img style="opacity: .4; height: 20px; width: 20px" src="/img/tree/folderAddSmall.png"></a></li>
+            <li v-if="!viewOnly && User_Role > 0" style="height: 18px; width: 18px" class="add" @click="$emit('add-item', item)"><a ><img style="opacity: .4; height: 20px; width: 20px" src="/img/tree/folderAddSmall.png"></a></li>
         </ul>
 
     </div>
@@ -49,7 +49,8 @@ export default {
         selected: null,
         parent: Object,
         project: Number || null,
-        viewOnly: Boolean || null
+        viewOnly: Boolean || null,
+        User_Role: Number || null,
     },
     data: function() {
         return {

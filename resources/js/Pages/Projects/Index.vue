@@ -5,7 +5,7 @@
         <h2>{{title}}</h2>
     </div>
 
-    <Link :href="route('projects.create')" class="text-blue-600 hover:text-blue-900 my-5 block">
+    <Link v-if="$attrs.user.User_Role > 1" :href="route('projects.create')" class="text-blue-600 hover:text-blue-900 my-5 block">
         Добавить проект
     </Link>
 
@@ -21,7 +21,7 @@
                     </div>
                     <div  style="height: 15%">
                         <Link @click="preferProject(project.Project_Name ,project.Project_id)" class="text-indigo-600 hover:text-indigo-900" style="margin-right: 10px">Выбрать</Link>
-                        <Link :href="route('projects.edit', {'Project_id': project.Project_id})" class="text-indigo-600 hover:text-indigo-900" style="margin-right: 10px">Изменить</Link>
+                        <Link v-if="$attrs.user.User_Role > 1" :href="route('projects.edit', {'Project_id': project.Project_id})" class="text-indigo-600 hover:text-indigo-900" style="margin-right: 10px">Изменить</Link>
                     </div>
                 </div>
             </div>

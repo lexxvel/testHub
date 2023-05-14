@@ -356,6 +356,7 @@ export default {
             Task_Priority: props.task.Task_Priority,
             Task_Stage: props.task.Task_Stage,
             Task_Project: props.task.Task_Project,
+            Task_isForRegress: props.task.Task_isForRegress,
             steps: [],
         });
 

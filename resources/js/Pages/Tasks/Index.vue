@@ -5,7 +5,7 @@
         <h2>{{ title }}</h2>
     </div>
 
-    <Link :href="route('tasks.create', {'selected': selected})" class="text-blue-600 hover:text-blue-900 my-5 block">
+    <Link v-if="$attrs.user.User_Role > 0" :href="route('tasks.create', {'selected': selected})" class="text-blue-600 hover:text-blue-900 my-5 block">
         Добавить
     </Link>
 
@@ -21,6 +21,7 @@
                             :item="treeDataFromDb"
                             :selected="selected"
                             :project="prefProject"
+                            :User_Role="$attrs.user.User_Role"
                             @make-folder="makeFolder"
                             @add-item="addItem"
                             @select-item="selectItem"

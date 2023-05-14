@@ -82,7 +82,6 @@ class TasksController extends Controller
     public function update(Request $request) {
         $goBackProject = $request->input('Task_Project');
         $result = $this->updateTask($request);
-        dd($result);
         return redirect()->route('tasks', ['Project_id' => $goBackProject])->withErrors($result);
     }
 
@@ -179,14 +178,23 @@ class TasksController extends Controller
      *  @return JSON результата запроса
      */
     public function updateTask(Request $request) {
-        $request->validate([
-            'Task_JiraProject' => 'required|max:255',
-            'Task_Name' => 'required|max:255',
-            'Task_Number' => 'required|max:255',
-            'Task_Priority' => 'required|max:255',
-            'Task_Stage' => 'required|max:255',
-            'Task_Project' => 'required|max:255',
-        ]);
+        if ($request->input("Task_isForRegress") == 1) {
+            $request->validate([
+                'Task_Name' => 'required|max:255',
+                'Task_Priority' => 'required|max:255',
+                'Task_Stage' => 'required|max:255',
+                'Task_Project' => 'required|max:255',
+            ]);
+        } else {
+            $request->validate([
+                'Task_JiraProject' => 'required|max:255',
+                'Task_Name' => 'required|max:255',
+                'Task_Number' => 'required|max:255',
+                'Task_Priority' => 'required|max:255',
+                'Task_Stage' => 'required|max:255',
+                'Task_Project' => 'required|max:255',
+            ]);
+        }
         $JiraProject = $request->input("Task_JiraProject");
         $Name = $request->input("Task_Name");
         $Number = $request->input("Task_Number");
@@ -226,6 +234,11 @@ class TasksController extends Controller
                         "error_msg" => $CreateVersionResult
                     ];
                 }
+            } else {
+                return [
+                    "status" => false,
+                    "error_msg" => "При обновлении кейса произошла ошибка"
+                ];
             }
     }
 
