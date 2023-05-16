@@ -20,7 +20,7 @@ class AuthController extends Controller
             if ($request->input('PrefProjectId') && $request->input('PrefProjectId') !== null) {
                 $PrefProjectId = $request->input('PrefProjectId');
                 $request->request->set('Project_id', $PrefProjectId);
-                (new api\v1\ProjectController())->setPrefProject($request);
+                (new Api\v1\ProjectController())->setPrefProject($request);
             }
             return redirect()->route('home');
         }
