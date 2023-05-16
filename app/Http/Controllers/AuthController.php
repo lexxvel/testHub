@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\api\v1\UserController;
+use App\Http\Controllers\Api\v1\UserController;
 use App\Http\Requests\LoginFormRequest;
 use Illuminate\Http\RedirectResponse;
 
