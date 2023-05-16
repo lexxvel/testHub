@@ -6,9 +6,9 @@ use App\Http\Controllers\Api\v1\RunResultsController;
 use App\Http\Controllers\Api\v1\TasksController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\api\v1\UserController;
-use App\Http\Controllers\api\v1\ProjectController;
-use App\Http\Controllers\api\v1\RunsController;
+use App\Http\Controllers\Api\v1\UserController;
+use App\Http\Controllers\Api\v1\ProjectController;
+use App\Http\Controllers\Api\v1\RunsController;
 use App\Http\Controllers\Api\v1\CaseVersionsController;
 
 /*
