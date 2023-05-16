@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Api\v1\ProjectController;
 use App\Http\Controllers\api\v1\UserController;
 use App\Http\Requests\LoginFormRequest;
 use Illuminate\Http\RedirectResponse;
@@ -16,7 +15,7 @@ class AuthController extends Controller
                 ->route('login')
                 ->withErrors(['email' => 'Пользователь не найден, либо данные введены не верно']);
         } else {
-            $user = (new api\v1\UserController)->getUserByEmail($request);
+            $user = (new UserController)->getUserByEmail($request);
             $request->session()->put('user', $user);
             if ($request->input('PrefProjectId') && $request->input('PrefProjectId') !== null) {
                 $PrefProjectId = $request->input('PrefProjectId');
