@@ -15,11 +15,13 @@ class CreateCaseVersionsTable extends Migration
     {
         Schema::create('case_versions', function (Blueprint $table) {
             $table->id();
-            $table->integer("Task_id");
+            $table->unsignedBigInteger("Task_id");
             $table->integer("version");
             $table->text("steps");
-            $table->integer("User_id");
+            $table->unsignedBigInteger("User_id");
             $table->timestamps();
+            $table->foreign('Task_id')->references('Task_id')->on('tasks')->onDelete('cascade');
+            $table->foreign('User_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

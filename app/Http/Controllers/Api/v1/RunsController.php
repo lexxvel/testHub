@@ -67,7 +67,7 @@ class RunsController extends Controller
         $Status = $request->input("Run_Status");
         $EndDate = $request->input("Run_EndDate");
         if ($EndDate) {
-            $date = Carbon::createFromFormat('d.m.Y', $EndDate)->format('Y/m/d');
+            $date = Carbon::createFromFormat('Y-m-d', $EndDate)->format('Y/m/d');
         } else {
             $date = null;
         }

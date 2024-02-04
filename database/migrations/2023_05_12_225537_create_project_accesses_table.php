@@ -15,9 +15,11 @@ class CreateProjectAccessesTable extends Migration
     {
         Schema::create('project_accesses', function (Blueprint $table) {
             $table->id();
-            $table->integer('User_id');
-            $table->integer('Project_id');
+            $table->unsignedBigInteger('User_id');
+            $table->unsignedBigInteger('Project_id');
             $table->timestamps();
+            $table->foreign('User_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('Project_id')->references('Project_id')->on('projects')->onDelete('cascade');
         });
     }
 

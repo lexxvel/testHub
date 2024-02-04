@@ -15,13 +15,16 @@ class CreateRunCaseResultVersionsTable extends Migration
     {
         Schema::create('run_case_result_versions', function (Blueprint $table) {
             $table->id();
-            $table->integer('RunResult_id');
-            $table->integer('RunStatus_id');
+            $table->unsignedBigInteger('RunResult_id');
+            $table->unsignedBigInteger('RunStatus_id');
             $table->text('RunResult_Comment')->nullable();
             $table->integer('RunResult_TimeSpent')->nullable();
-            $table->integer('User_id');
+            $table->unsignedBigInteger('User_id');
             $table->integer('version');
             $table->timestamps();
+            $table->foreign('RunResult_id')->references('id')->on('run_results')->onDelete('cascade');
+            $table->foreign('RunStatus_id')->references('RunStatus_id')->on('run_statuses')->onDelete('cascade');
+            $table->foreign('User_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

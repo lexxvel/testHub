@@ -15,7 +15,7 @@ class CreateTasksTable extends Migration
     {
         Schema::create('tasks', function (Blueprint $table) {
             $table->id('Task_id');
-            $table->string('Task_Project');
+            $table->unsignedBigInteger('Task_Project');
             $table->string('Task_JiraProject')->nullable();
             $table->string('Task_Number')->nullable();
             $table->string('Task_Name');
@@ -26,6 +26,7 @@ class CreateTasksTable extends Migration
             $table->integer('Task_isForRegress')->nullable();
             $table->integer('Task_ActualVersion');
             $table->timestamps();
+            $table->foreign('Task_Project')->references('Project_id')->on('projects')->onDelete('cascade');
         });
     }
 

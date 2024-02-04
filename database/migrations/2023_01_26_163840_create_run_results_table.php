@@ -15,13 +15,16 @@ class CreateRunResultsTable extends Migration
     {
         Schema::create('run_results', function (Blueprint $table) {
             $table->id();
-            $table->integer("Run_id");
-            $table->integer("Task_id");
+            $table->unsignedBigInteger("Run_id");
+            $table->unsignedBigInteger("Task_id");
             $table->text("steps")->nullable();
-            $table->integer("User_id")->nullable();
+            $table->unsignedBigInteger("User_id")->nullable();
             $table->integer("RunResult_SectionId")->nullable();
             $table->integer("Task_Version");
             $table->timestamps();
+            $table->foreign('Task_id')->references('Task_id')->on('tasks')->onDelete('cascade');
+            $table->foreign('User_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('Run_id')->references('Run_id')->on('runs')->onDelete('cascade');
         });
     }
 

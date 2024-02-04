@@ -142,7 +142,7 @@
                 <div class="flex items-center justify-center">
                     <div class="datepicker relative form-floating mb-3 xl:w-96">
                         <label for="testRunEndDate" class="text-gray-700">Дата окончания тест-рана</label>
-                        <input type="text"
+                        <input type="date"
                                v-model="form.Run_EndDate"
                                id="testRunEndDate"
                                class="form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"

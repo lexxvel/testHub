@@ -16,10 +16,11 @@ class CreateStepsTable extends Migration
         Schema::create('steps', function (Blueprint $table) {
             $table->id('Step_id');
             $table->string('Step_Number');
-            $table->integer('Task_id');
+            $table->unsignedBigInteger('Task_id');
             $table->text('Step_Action');
             $table->text('Step_Result');
             $table->timestamps();
+            $table->foreign('Task_id')->references('Task_id')->on('tasks')->onDelete('cascade');
         });
     }
 
